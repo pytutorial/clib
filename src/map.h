@@ -4,10 +4,10 @@
 #include "object.h"
 #include "string_util.h"
 
-#define ERR_MAP_PUT "Put to an invalid map"
-#define ERR_MAP_GET "Get value of an invalid map"
-#define ERR_MAP_REMOVE "Remove key of an invalid map"
-#define ERR_MAP_GET_ITEMS "Get items of an invalid map"
+#define ERR_MAP_PUT                 "Put to an invalid map"
+#define ERR_MAP_GET                 "Get value of an invalid map"
+#define ERR_MAP_REMOVE              "Remove key of an invalid map"
+#define ERR_MAP_GET_ITEMS           "Get items of an invalid map"
 
 #define BUCKET_SIZE 1024
 

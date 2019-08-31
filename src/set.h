@@ -4,7 +4,7 @@
 #include "object.h"
 #include "string_util.h"
 
-#define ERR_SET "Add to an invalid set"
+#define ERR_SET     "Add to an invalid set"
 
 #define BUCKET_SIZE 1024
 
