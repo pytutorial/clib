@@ -48,9 +48,19 @@ ListListInt new_table(Scope* scope, int* _table, int N, int M)
     return table;
 }
 
-void fprint_row(FILE*f, ListInt row)
+void print_int(int i)
 {
-    fprint_list(f, row, "%d");
+    printf("%d", i);
+}
+
+void print_row(ListInt row)
+{
+    print_list(row, "%d");
+}
+
+void print_table(ListListInt table)
+{
+    print_list_obj(table, print_row);
 }
 
 int main()
@@ -69,19 +79,10 @@ int main()
 
     ListListInt table = new_table(scope, data, 8, 4);
 
-    fprint_list_obj(stdout, table, fprint_row);
+    print_table(table);
 
     MapIntListListInt groups = group_by(table, 0);
-
-    ListInt keys = new_list_int(scope, 0);
-    ListListListInt values = new_list_list_list_int(scope, 0);
-    get_map_items(groups, keys, values);
-    
-    for(int i = 0; i < size_of_list(keys); i++)
-    {
-        printf("Feature % d :\n", at_q(keys, i));
-        fprint_list_obj(stdout, at_q(values, i), fprint_row);
-    }
+    print_map(groups, print_int, print_table);
 
     free_scope(scope);
     return 0;

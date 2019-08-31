@@ -184,36 +184,36 @@
             *(p_sum_var) += _list_items(lst)[i];    \
     }
 
-#define fprint_list(f, lst, fmt)                   \
-    {                                              \
-        typeof(lst) _lst = lst;                    \
-        int len = size_of_list(_lst);              \
-        fprintf(f, "[");                           \
-                                                   \
-        for (int i = 0; i < len; i++)              \
-        {                                          \
-            fprintf(f, fmt, _list_items(_lst)[i]); \
-            if (i < len - 1)                       \
-                fprintf(f, ", ");                  \
-        }                                          \
-                                                   \
-        fprintf(f, "]\n");                         \
+#define print_list(lst, fmt)                        \
+    if(!is_null_list(lst)){                       \
+        typeof(lst) _lst = lst;                     \
+        int len = size_of_list(_lst);               \
+        printf("[");                                \
+                                                    \
+        for (int i = 0; i < len; i++)               \
+        {                                           \
+            printf(fmt, _list_items(_lst)[i]);      \
+            if (i < len - 1)                        \
+                printf(", ");                       \
+        }                                           \
+                                                    \
+        printf("]\n");                              \
     }
 
-#define fprint_list_obj(f, lst, fprint_item)      \
-    {                                             \
-        typeof(lst) _lst = lst;                   \
-        int len = size_of_list(_lst);             \
-        fprintf(f, "[");                          \
-                                                  \
-        for (int i = 0; i < len; i++)             \
-        {                                         \
-            fprint_item(f, _list_items(_lst)[i]); \
-            if (i < len - 1)                      \
-                fprintf(f, ", ");                 \
-        }                                         \
-                                                  \
-        fprintf(f, "]\n");                        \
+#define print_list_obj(lst, print_item)             \
+    if(!is_null_list(lst)){                         \
+        typeof(lst) _lst = lst;                     \
+        int len = size_of_list(_lst);               \
+        printf("[");                                \
+                                                    \
+        for (int i = 0; i < len; i++)               \
+        {                                           \
+            print_item(_list_items(_lst)[i]);       \
+            if (i < len - 1)                        \
+                printf(", ");                       \
+        }                                           \
+                                                    \
+        printf("]\n");                              \
     }
 
 DECLARE_LIST_TYPE(ListInt, int, new_list_int);

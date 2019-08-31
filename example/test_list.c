@@ -19,7 +19,7 @@ int main()
     remove_list_at(lst, 6);
     remove_list_at(lst, 0);
 
-    fprint_list(stdout, lst, "%0.2f");
+    print_list(lst, "%0.2f");
 
     ListDouble lst2 = new_list_double(scope, 2);
     list_copy(lst2, 0, lst, 1, 3);
@@ -30,8 +30,8 @@ int main()
 
     at(lst, 1) = 10;
 
-    fprint_list(stdout, lst2, "%0.2f");
-    fprint_list(stdout, view, "%0.2f");
+    print_list(lst2, "%0.2f");
+    print_list(view, "%0.2f");
 
     double sum_lst = 0, sum_view = 0, sum_sub_lst = 0;
     get_list_sum(lst, &sum_lst);

@@ -45,27 +45,4 @@ typedef Array(float) ArrayFloat;
 typedef Array(unsigned char) ArrayByte;
 typedef Array(void *) ArrayPtr;
 
-#define fprint_sub_array(f, arr, fmt, start, end) \
-    fprintf(f, "[");                              \
-    for (int __i = start; __i < end; __i++)       \
-    {                                             \
-        fprintf(f, fmt, at(arr, __i));            \
-        if (__i < end - 1)                        \
-            fprintf(f, ", ");                     \
-    }                                             \
-    fprintf(f, "]");
-
-#define fprint_sub_array_obj(f, arr, fprint_item, start, end) \
-    fprintf(f, "[");                                          \
-    for (int __i = start; __i < end; __i++)                   \
-    {                                                         \
-        fprint_item(f, at(arr, __i));                         \
-        if (__i < end - 1)                                    \
-            fprintf(f, ", ");                                 \
-    }                                                         \
-    fprintf(f, "]");
-
-#define fprint_array(f, arr, fmt) fprint_sub_array(f, arr, fmt, 0, (arr).size)
-#define fprint_array_obj(f, arr, fprint_item) fprint_sub_array_obj(f, arr, fprint_item, 0, (arr).size)
-
 #endif

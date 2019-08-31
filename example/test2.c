@@ -11,9 +11,9 @@ typedef struct
     double rank;
 } Item;
 
-void fprint_item(FILE *f, Item item)
+void print_item(Item item)
 {
-    fprintf(f, "{gre : %f, gpa : %f, rank : %f}", item.gre, item.gpa, item.rank);
+    printf("{gre : %f, gpa : %f, rank : %f}", item.gre, item.gpa, item.rank);
 }
 
 DECLARE_LIST_TYPE(ListItem, Item, new_list_item);
@@ -57,10 +57,11 @@ int main()
 
     if (N > 0)
     {
-        printf("Xhead = ");
-        fprint_list_obj(stdout, list_view(X, 0, 10), fprint_item);
-        printf("Yhead = ");
-        fprint_list(stdout, list_view(Y, 0, 10), "%f");
+        ListItem Xhead = list_view(X, 0, 10);
+        ListDouble Yhead = list_view(Y, 0, 10);
+        
+        printf("Xhead = "); print_list_obj(Xhead, print_item);
+        printf("Yhead = "); print_list(Yhead, "%f");
 
         int epochs = 100;
         double lr = 0.001;

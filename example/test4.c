@@ -22,7 +22,7 @@ int main()
 
     int x = pop(lst);
 
-    fprint_list(stdout, lst, "%d");
+    print_list(lst, "%d");
 
     printf("%d\n", *raw_ptr(p));
 

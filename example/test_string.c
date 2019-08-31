@@ -4,6 +4,11 @@
 #include "list.h"
 #include "string_util.h"
 
+void print_string(String st)
+{
+    puts(str_data(st));
+}
+
 int main()
 {
     Scope *scope = new_scope();

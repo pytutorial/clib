@@ -171,13 +171,6 @@ bool string_equal(String st1, String st2)
     return st1._len == st2._len && strncmp(st1._data, st2._data, st1._len) == 0;
 }
 
-void print_string(String st)
-{
-    _check_valid_string(st, __FILE__, __LINE__);
-
-    puts(st._data);
-}
-
 int hash_string(String st)
 {
     int *p = (int *)(str_data(st));

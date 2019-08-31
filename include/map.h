@@ -157,11 +157,28 @@
         }                                                                \
     }
 
+#define print_map(m, print_key, print_value)                                        \
+    {                                                                               \
+        Scope* scope = new_scope();                                                 \
+        _item_type(m) item;                                                         \
+        List(typeof(item.key)) keys = _new_list(typeof(item.key), scope, 0);        \
+        List(typeof(item.value)) values = _new_list(typeof(item.value), scope, 0);  \
+        get_map_items(m, keys, values);                                             \
+        printf("{");                                                                \
+        for(int i = 0; i < size_of_list(keys); i++)                                 \
+        {                                                                           \
+            print_key(at_q(keys, i));                                               \
+            printf(" : ");                                                          \
+            print_value(at_q(values, i));                                           \
+            if(i < size_of_list(keys) - 1) printf(" , ");                           \
+        }                                                                           \
+        printf("}\n");                                                              \
+        free_scope(scope);                                                          \
+    }
+
 static inline int hash_int(int x) { return x; }
 static inline bool cmp_int(int x1, int x2) { return x1 == x2; }
 
 DECLARE_MAP_TYPE(MapIntInt, int, int, hash_int, cmp_int, new_map_int_int);
-//DECLARE_MAP_TYPE(MapIntString, int, String, hash_int, cmp_int, new_map_int_string);
-//DECLARE_MAP_TYPE(MapStringInt, String, int, hash_string, string_equal, new_map_string_int);
 
 #endif

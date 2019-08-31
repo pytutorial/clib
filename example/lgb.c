@@ -276,9 +276,9 @@ DataSet read_data(Scope *scope)
     return data_set;
 }
 
-void fprint_input_item(FILE *f, ListDouble item)
+void print_input_item(ListDouble item)
 {
-    fprint_list(f, item, "%0.2f");
+    print_list(item, "%0.2f");
 }
 
 int main()
@@ -288,10 +288,10 @@ int main()
     DataSet data_set = read_data(scope);
 
     printf("Input = ");
-    fprint_list_obj(stdout, data_set.input.data, fprint_input_item);
+    print_list_obj(data_set.input.data, print_input_item);
 
     printf("\nOutput = ");
-    fprint_list(stdout, data_set.output, "%0.0f");
+    print_list(data_set.output, "%0.0f");
 
     printf("\n");
 
