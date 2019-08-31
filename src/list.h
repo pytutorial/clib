@@ -103,23 +103,30 @@
 
 #define clear_list(lst) resize_list(lst, 0)
 
-#define list_size(lst) ( \
-    ((lst)._state == VALID && (lst).scope->state == VALID) ? _list_size(lst) : QUIT(ERR_LIST_SIZE, __FILE__, __LINE__).value)
+#define list_size(lst)  (                                                                       \
+                            ((lst)._state == VALID && (lst).scope->state == VALID) ?            \
+                            _list_size(lst) : QUIT(ERR_LIST_SIZE, __FILE__, __LINE__).value     \
+                        )
 
-#define pop(lst) (*( \
-    (0 < _list_size(lst) && (lst).scope->state == VALID && !(lst)._readonly) ? (_list_items(lst) + (--_list_size(lst))) : (typeof(_list_items(lst)))QUIT(ERR_POP, __FILE__, __LINE__).ptr))
+#define pop(lst)    (*( \
+                        (0 < _list_size(lst) && (lst).scope->state == VALID && !(lst)._readonly) ?  \
+                            (_list_items(lst) + (--_list_size(lst))) :                              \
+                            (typeof(_list_items(lst)))QUIT(ERR_POP, __FILE__, __LINE__).ptr)        \
+                    )
 
 #define list_data_ptr(lst) (*(lst)._p_items)
 
 #define _check_range(lst, start, end) (start >= 0 && start <= end && end <= list_size(lst))
 
-#define list_view(lst, start, end)                                                                                                                                                  \
-    (typeof(lst))                                                                                                                                                                   \
-    {                                                                                                                                                                               \
-        _check_range(lst, start, end) ? (typeof((lst)._p_items))p_ref_alloc(scope, _list_items(lst) + start) : (typeof((lst)._p_items))QUIT(ERR_LIST_VIEW, __FILE__, __LINE__).ptr, \
-            p_int_alloc(scope, end - start),                                                                                                                                        \
-            p_int_alloc(scope, end - start),                                                                                                                                        \
-            VALID, 1, scope                                                                                                                                                         \
+#define list_view(lst, start, end)                                                          \
+    (typeof(lst))                                                                           \
+    {                                                                                       \
+        _check_range(lst, start, end) ?                                                     \
+                (typeof((lst)._p_items))p_ref_alloc(scope, _list_items(lst) + start) :      \
+                (typeof((lst)._p_items))QUIT(ERR_LIST_VIEW, __FILE__, __LINE__).ptr,        \
+            p_int_alloc(scope, end - start),                                                \
+            p_int_alloc(scope, end - start),                                                \
+            VALID, 1, scope                                                                 \
     }
 
 #define list_copy(dst, dst_start, src, src_start, src_end)                    \

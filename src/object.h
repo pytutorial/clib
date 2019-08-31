@@ -34,9 +34,11 @@ typedef struct
         Scope *scope; \
     }
 
-#define raw_ptr(obj) (((obj)._state == VALID && (obj).scope->state == VALID) ? (obj)._ptr : (typeof(obj._ptr))QUIT(ERR_RAW_PTR, __FILE__, __LINE__).ptr)
+#define raw_ptr(obj) (((obj)._state == VALID && (obj).scope->state == VALID) ? \
+                        (obj)._ptr : (typeof(obj._ptr))QUIT(ERR_RAW_PTR, __FILE__, __LINE__).ptr)
 
-#define attr(obj, field) (((obj)._state == VALID && (obj).scope->state == VALID) ? (obj)._ptr : (typeof(obj._ptr))QUIT(ERR_RAW_PTR, __FILE__, __LINE__).ptr)->field
+#define attr(obj, field) (((obj)._state == VALID && (obj).scope->state == VALID) ? \
+                        (obj)._ptr : (typeof(obj._ptr))QUIT(ERR_RAW_PTR, __FILE__, __LINE__).ptr)->field
 
 #define new_object(type, scope)                       \
     {                                                 \
