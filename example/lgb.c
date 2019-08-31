@@ -56,9 +56,9 @@ typedef struct
 
 void get_arg_sort_indexes(const ListDouble lst, ListInt indexes)
 {
-    assert(list_size(lst) == list_size(indexes));
+    assert(size_of_list(lst) == size_of_list(indexes));
 
-    int N = list_size(lst);
+    int N = size_of_list(lst);
 
     Scope *scope = new_scope();
     ListDouble lst_clone = new_list_double(scope, N);
@@ -115,9 +115,9 @@ double _calc_leaf_weight(ListDouble grad, ListDouble hessian, double lambd)
 void build(TreeNodeObject nodeObj, int input_dim, ListListDouble instances, ListDouble grad, ListDouble hessian, double shrinkage_rate, int depth, Param param)
 {
 
-    int N = list_size(instances);
+    int N = size_of_list(instances);
 
-    assert(list_size(grad) == N && list_size(hessian) == N);
+    assert(size_of_list(grad) == N && size_of_list(hessian) == N);
 
     TreeNode *node = raw_ptr(nodeObj);
 
@@ -242,19 +242,19 @@ DataSet read_data(Scope *scope)
     DataSet data_set;
     memset(&data_set, 0, sizeof(DataSet));
 
-    if (list_size(table) > 0 && list_size(at(table, 0)) >= 2)
+    if (size_of_list(table) > 0 && size_of_list(at(table, 0)) >= 2)
     {
-        int N = list_size(table);
+        int N = size_of_list(table);
         ListListDouble X = new_list_list_double(scope, N);
         ListDouble Y = new_list_double(scope, N);
 
-        InputData input = {list_size(at(table, 0)) - 1, X};
+        InputData input = {size_of_list(at(table, 0)) - 1, X};
         OutputData output = Y;
 
         for (int i = 0; i < N; i++)
         {
             ListDouble row = at(table, i);
-            int M = list_size(row);
+            int M = size_of_list(row);
 
             if (M >= 2)
             {

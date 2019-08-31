@@ -27,7 +27,7 @@ void read_csv(const char *fn, const char *delimiter, int skip_header, ListListDo
         {
             String st = new_string(scope, line);
             ListString lst = split_string(st, delimiter);
-            int n_items = list_size(lst);
+            int n_items = size_of_list(lst);
 
             if (n_items > 0)
             {

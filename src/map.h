@@ -46,8 +46,10 @@
         return m;                                                                              \
     }
 
-#define map_size(m) ( \
+#define size_of_map(m) ( \
     ((m)._state == VALID && (m).scope->state == VALID) ? *(m)._p_size : QUIT(ERR_MAP_SIZE, __FILE__, __LINE__).value)
+
+#define is_empty_map(m) (size_of_map(m) == 0)
 
 #define put_map(m, _key, _value)                                         \
     {                                                                    \

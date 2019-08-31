@@ -31,7 +31,7 @@ int main()
     String st5 = new_string(scope, "a1,b2,c3,d4,,,,");
     ListString items = split_string(st5, ",");
 
-    for (int i = 0; i < list_size(items); i++)
+    for (int i = 0; i < size_of_list(items); i++)
     {
         print_string(at(items, i));
     }

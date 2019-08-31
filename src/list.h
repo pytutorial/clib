@@ -6,16 +6,16 @@
 
 #define ALWAYS_BOUND_CHECK 0
 
-#define ERR_AT                          "Invalid list or list index out of range"
-#define ERR_REMOVE_AT                   "Remove item from list : invalid list ,or readonly list, or index out of range"
-#define ERR_POP                         "Pop invalid or empty list"
-#define ERR_LIST_SIZE                   "Get size of invalid list"
-#define ERR_RESIZE                      "Resize invalid or readonly list"
-#define ERR_PUSH                        "Push to invalid or readonly list"
-#define ERR_SOURCE_INDEX                "Source index out of range"
-#define ERR_DEST_INDEX                  "Destination index out of range"
-#define ERR_SRC_DST_TYPE                "Source and destination list having different types"
-#define ERR_LIST_VIEW                   "Invalid list or get view of list out of range"
+#define ERR_AT "Invalid list or list index out of range"
+#define ERR_REMOVE_AT "Remove item from list : invalid list ,or readonly list, or index out of range"
+#define ERR_POP "Pop invalid or empty list"
+#define ERR_LIST_SIZE "Get size of invalid list"
+#define ERR_RESIZE "Resize invalid or readonly list"
+#define ERR_PUSH "Push to invalid or readonly list"
+#define ERR_SOURCE_INDEX "Source index out of range"
+#define ERR_DEST_INDEX "Destination index out of range"
+#define ERR_SRC_DST_TYPE "Source and destination list having different types"
+#define ERR_LIST_VIEW "Invalid list or get view of list out of range"
 
 #define List(type)        \
     struct                \
@@ -91,40 +91,27 @@
         _list_size(lst) = sz;                                                        \
     }
 
-#define pop(lst)    (                                                                                       \
-                        *(                                                                                  \
-                            (0 < _list_size(lst) && (lst).scope->state == VALID && !(lst)._readonly) ?      \
-                                (_list_items(lst) + (--_list_size(lst))) :                                  \
-                                (typeof(_list_items(lst))) QUIT(ERR_POP, __FILE__, __LINE__).ptr            \
-                        )                                                                                   \
-                    )
+#define pop(lst) ( \
+    *(             \
+        (0 < _list_size(lst) && (lst).scope->state == VALID && !(lst)._readonly) ? (_list_items(lst) + (--_list_size(lst))) : (typeof(_list_items(lst)))QUIT(ERR_POP, __FILE__, __LINE__).ptr))
 
+#define at(lst, i) ( \
+    *(               \
+        ((unsigned)(i) < (unsigned)_list_size(lst) && (lst).scope->state == VALID) ? (_list_items(lst) + (i)) : (typeof(_list_items(lst)))QUIT(ERR_AT, __FILE__, __LINE__).ptr))
 
-#define at(lst, i)  (                                                                                       \
-                        *(                                                                                  \
-                            ((unsigned)(i) < (unsigned)_list_size(lst) && (lst).scope->state == VALID) ?    \
-                                (_list_items(lst) + (i)) :                                                  \
-                                (typeof(_list_items(lst))) QUIT(ERR_AT, __FILE__, __LINE__).ptr             \
-                        )                                                                                   \
-                    )
-
-#define remove_list_at(lst, index)                                  \
-    {                                                               \
-        if ((unsigned)(index) >= (unsigned) _list_size(lst)         \
-            || (lst)._state != VALID                                \
-            || (lst).scope->state != VALID                          \
-            || (lst)._readonly)                                     \
-        {                                                           \
-            QUIT(ERR_REMOVE_AT, __FILE__, __LINE__);                \
-        }                                                           \
-                                                                    \
-        for(int i = index; i < _list_size(lst) - 1; i++)            \
-        {                                                           \
-            _list_items(lst)[i] = _list_items(lst)[i+1];            \
-        }                                                           \
-        _list_size(lst) -= 1;                                       \
+#define remove_list_at(lst, index)                                                                                                     \
+    {                                                                                                                                  \
+        if ((unsigned)(index) >= (unsigned)_list_size(lst) || (lst)._state != VALID || (lst).scope->state != VALID || (lst)._readonly) \
+        {                                                                                                                              \
+            QUIT(ERR_REMOVE_AT, __FILE__, __LINE__);                                                                                   \
+        }                                                                                                                              \
+                                                                                                                                       \
+        for (int i = index; i < _list_size(lst) - 1; i++)                                                                              \
+        {                                                                                                                              \
+            _list_items(lst)[i] = _list_items(lst)[i + 1];                                                                             \
+        }                                                                                                                              \
+        _list_size(lst) -= 1;                                                                                                          \
     }
-
 
 #if ALWAYS_BOUND_CHECK
 #define at_q(lst, i) at(lst, i)
@@ -136,35 +123,33 @@
 
 #define clear_list(lst) resize_list(lst, 0)
 
-#define list_size(lst)  (                                                                       \
-                            ((lst)._state == VALID && (lst).scope->state == VALID) ?            \
-                            _list_size(lst) : QUIT(ERR_LIST_SIZE, __FILE__, __LINE__).value     \
-                        )
+#define size_of_list(lst) ( \
+    ((lst)._state == VALID && (lst).scope->state == VALID) ? _list_size(lst) : QUIT(ERR_LIST_SIZE, __FILE__, __LINE__).value)
 
 #define list_data_ptr(lst) (*(lst)._p_items)
 
-#define _check_range(lst, start, end) (start >= 0 && start <= end && end <= list_size(lst))
+#define _check_range(lst, start, end) (start >= 0 && start <= end && end <= size_of_list(lst))
 
-#define list_view(lst, start, end)                                                          \
-    (typeof(lst))                                                                           \
-    {                                                                                       \
-        _check_range(lst, start, end) ?                                                     \
-                (typeof((lst)._p_items))p_ref_alloc(scope, _list_items(lst) + start) :      \
-                (typeof((lst)._p_items))QUIT(ERR_LIST_VIEW, __FILE__, __LINE__).ptr,        \
-            p_int_alloc(scope, end - start),                                                \
-            p_int_alloc(scope, end - start),                                                \
-            VALID, 1, scope                                                                 \
+#define list_view(lst, start, end)                                                                                                                                                  \
+    (typeof(lst))                                                                                                                                                                   \
+    {                                                                                                                                                                               \
+        _check_range(lst, start, end) ? (typeof((lst)._p_items))p_ref_alloc(scope, _list_items(lst) + start) : (typeof((lst)._p_items))QUIT(ERR_LIST_VIEW, __FILE__, __LINE__).ptr, \
+            p_int_alloc(scope, end - start),                                                                                                                                        \
+            p_int_alloc(scope, end - start),                                                                                                                                        \
+            VALID, 1, scope                                                                                                                                                         \
     }
 
 #define list_copy(dst, dst_start, src, src_start, src_end)                    \
     {                                                                         \
-        if (src_start < 0 || src_end < src_start || src_end > list_size(src)) \
+        int src_size = size_of_list(src);                                     \
+        int dst_size = size_of_list(dst);                                     \
+        if (src_start < 0 || src_end < src_start || src_end > src_size)       \
         {                                                                     \
             QUIT(ERR_SOURCE_INDEX, __FILE__, __LINE__);                       \
         }                                                                     \
                                                                               \
         int len = src_end - src_start;                                        \
-        if (dst_start < 0 || dst_start + len > list_size(dst))                \
+        if (dst_start < 0 || dst_start + len > dst_size)                      \
         {                                                                     \
             QUIT(ERR_DEST_INDEX, __FILE__, __LINE__);                         \
         }                                                                     \
@@ -178,17 +163,17 @@
                _list_items(src) + src_start, len * sizeof(_list_items(src))); \
     }
 
-#define get_list_sum(lst, p_sum_var)             \
-    {                                            \
-        *(p_sum_var) = 0;                        \
-        for (int i = 0; i < list_size(lst); i++) \
-            *(p_sum_var) += _list_items(lst)[i]; \
+#define get_list_sum(lst, p_sum_var)                \
+    {                                               \
+        *(p_sum_var) = 0;                           \
+        for (int i = 0; i < size_of_list(lst); i++) \
+            *(p_sum_var) += _list_items(lst)[i];    \
     }
 
 #define fprint_list(f, lst, fmt)                   \
     {                                              \
         typeof(lst) _lst = lst;                    \
-        int len = list_size(_lst);                 \
+        int len = size_of_list(_lst);              \
         fprintf(f, "[");                           \
                                                    \
         for (int i = 0; i < len; i++)              \
@@ -204,7 +189,7 @@
 #define fprint_list_obj(f, lst, fprint_item)      \
     {                                             \
         typeof(lst) _lst = lst;                   \
-        int len = list_size(_lst);                \
+        int len = size_of_list(_lst);             \
         fprintf(f, "[");                          \
                                                   \
         for (int i = 0; i < len; i++)             \

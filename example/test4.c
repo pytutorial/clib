@@ -15,7 +15,7 @@ int main()
 
     ListInt lst = new_list_int(scope, 10);
 
-    for (int i = 0; i < list_size(lst); i++)
+    for (int i = 0; i < size_of_list(lst); i++)
     {
         at(lst, i) = i;
     }

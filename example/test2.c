@@ -31,11 +31,11 @@ void read_data(ListItem X, ListDouble Y)
 
     read_csv("admit.csv", ",", 1, data_set);
 
-    for (int i = 0; i < list_size(data_set); i++)
+    for (int i = 0; i < size_of_list(data_set); i++)
     {
         ListDouble row = at(data_set, i);
 
-        if (list_size(row) >= 4)
+        if (size_of_list(row) >= 4)
         {
             push(Y, at(row, 0));
             push(X, ((Item){at(row, 1), at(row, 2), at(row, 3)}));
@@ -53,7 +53,7 @@ int main()
 
     read_data(X, Y);
 
-    int N = list_size(X);
+    int N = size_of_list(X);
 
     if (N > 0)
     {

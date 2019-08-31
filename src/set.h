@@ -4,7 +4,7 @@
 #include "object.h"
 #include "string_util.h"
 
-#define ERR_SET                     "Add to an invalid set"
+#define ERR_SET "Add to an invalid set"
 
 #define BUCKET_SIZE 1024
 
@@ -43,10 +43,12 @@
         return s;                                                                              \
     }
 
-#define set_size(s) ( \
+#define size_of_set(s) ( \
     ((s)._state == VALID && (s).scope->state == VALID) ? *(s)._p_size : QUIT(ERR_SET, __FILE__, __LINE__).value)
 
-#define add_to_set(s, item)                                                 \
+#define is_empty_set(s) (size_of_set(s) == 0)
+
+#define add_to_set(s, item)                                              \
     {                                                                    \
         if ((s)._state != VALID || (s).scope->state != VALID)            \
         {                                                                \

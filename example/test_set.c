@@ -25,7 +25,7 @@ int main()
     ListString lst = new_list_string(scope, 0);
     get_set_items(s2, lst);
 
-    for(int i = 0; i < list_size(lst); i++) print_string(at_q(lst, i));
+    for(int i = 0; i < size_of_list(lst); i++) print_string(at_q(lst, i));
 
     free_scope(scope);
     return 0;
