@@ -148,7 +148,7 @@
 #define _check_range(lst, start, end) (start >= 0 && start <= end && end <= size_of_list(lst))
 
 #define list_view(lst, start, end)                                                  \
-    (typeof(lst))                                                                   \
+    ((typeof(lst))                                                                   \
     {                                                                               \
         _check_range(lst, start, end) ?                                             \
             (typeof((lst)._p_items))p_ref_alloc(scope, _list_items(lst) + start) :  \
@@ -156,7 +156,7 @@
         p_int_alloc(scope, end - start),                                            \
         p_int_alloc(scope, end - start),                                            \
         VALID, 1, scope                                                             \
-    }
+    })
 
 #define list_copy(dst, dst_start, src, src_start, src_end)                    \
     {                                                                         \
