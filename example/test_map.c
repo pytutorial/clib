@@ -16,7 +16,7 @@ int main()
 
     ListInt keys = new_list_int(scope, 0);
     ListInt values = new_list_int(scope, 0);
-    get_map_items(m1, keys, values);
+    map_get_items(m1, keys, values);
 
     for(int i = 0; i < list_size(keys); i++)
     {

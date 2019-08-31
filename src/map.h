@@ -97,7 +97,7 @@
             *(p_value) = default_value;                              \
     }
 
-#define get_map_items(m, keys, values)                                   \
+#define map_get_items(m, keys, values)                                   \
     {                                                                    \
         if ((m)._state != VALID || (m).scope->state != VALID)            \
         {                                                                \
