@@ -6,7 +6,7 @@
 
 #define ERR_SET     "Add to an invalid set"
 
-#define BUCKET_SIZE 1024
+#define SET_BUCKET_SIZE 1024
 
 #define Set(T)                                                                                                                     \
     struct                                                                                                                         \
@@ -28,7 +28,7 @@
     SetType new_set_func_name(Scope *scope)                                                                                       \
     {                                                                                                                             \
         SetType s;                                                                                                                \
-        s._table = (typeof(s._table))_new_list(typeof(at_q(s._table, 0)), scope, BUCKET_SIZE);                                    \
+        s._table = (typeof(s._table))_new_list(typeof(at_q(s._table, 0)), scope, SET_BUCKET_SIZE);                                \
         s._p_size = p_int_alloc(scope, 0);                                                                                        \
         s._p_active_bucket = p_int_alloc(scope, 0);                                                                               \
         s._state = VALID;                                                                                                         \
@@ -36,7 +36,7 @@
         s._cmp_func = cmp_func;                                                                                                   \
         s.scope = scope;                                                                                                          \
                                                                                                                                   \
-        for (int i = 0; i < BUCKET_SIZE; i++)                                                                                     \
+        for (int i = 0; i < SET_BUCKET_SIZE; i++)                                                                                 \
         {                                                                                                                         \
             at_q(s._table, i) = (typeof(at_q(s._table, i)))_new_list(_set_item_type(s), scope, 0);                                \
         }                                                                                                                         \

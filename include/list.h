@@ -132,15 +132,14 @@
 #define at_q(lst, i) _list_items(lst)[i]
 #endif
 
-#define is_empty_list(lst) (((lst)._state == VALID && (lst).scope->state == VALID) ?                                           \
-                                (_list_size(lst) == 0) : QUIT(ERR_LIST_IS_EMPTY, __FILE__, __LINE__).value)
-
-#define is_null_list(lst)  ((lst)._p_items == NULL && (lst).scope == NULL)
-
-#define clear_list(lst) resize_list(lst, 0)
+#define clear_list(lst)     resize_list(lst, 0)
 
 #define size_of_list(lst)   (((lst)._state == VALID && (lst).scope->state == VALID) ?                                          \
                                 _list_size(lst) : QUIT(ERR_LIST_SIZE, __FILE__, __LINE__).value)
+
+#define is_empty_list(lst)  (size_of_list(lst) == 0)
+
+#define is_null_list(lst)   ((lst)._p_items == NULL && (lst).scope == NULL)
 
 #define list_data_ptr(lst)  (((lst)._state == VALID && (lst).scope->state == VALID) ?                                          \
                                 (*(lst)._p_items) : (typeof(*(lst)._p_items)) QUIT(ERR_LIST_DATA_PTR, __FILE__, __LINE__).ptr)

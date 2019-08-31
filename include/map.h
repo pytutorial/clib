@@ -9,7 +9,7 @@
 #define ERR_MAP_REMOVE              "Remove key of an invalid map"
 #define ERR_MAP_GET_ITEMS           "Get items of an invalid map"
 
-#define BUCKET_SIZE 1024
+#define MAP_BUCKET_SIZE 1024
 
 #define Map(K, V)                                                                                                                  \
     struct                                                                                                                         \
@@ -31,7 +31,7 @@
     MapType new_map_func_name(Scope *scope)                                                                                        \
     {                                                                                                                              \
         MapType m;                                                                                                                 \
-        m._table = (typeof(m._table))_new_list(typeof(at_q(m._table, 0)), scope, BUCKET_SIZE);                                     \
+        m._table = (typeof(m._table))_new_list(typeof(at_q(m._table, 0)), scope, MAP_BUCKET_SIZE);                                 \
         m._p_size = p_int_alloc(scope, 0);                                                                                         \
         m._p_active_bucket = p_int_alloc(scope, 0);                                                                                \
         m._state = VALID;                                                                                                          \
@@ -39,7 +39,7 @@
         m._cmp_func = cmp_func;                                                                                                    \
         m.scope = scope;                                                                                                           \
                                                                                                                                    \
-        for (int i = 0; i < BUCKET_SIZE; i++)                                                                                      \
+        for (int i = 0; i < MAP_BUCKET_SIZE; i++)                                                                                  \
         {                                                                                                                          \
             at_q(m._table, i) = (typeof(at_q(m._table, i)))_new_list(_map_item_type(m), scope, 0);                                 \
         }                                                                                                                          \
