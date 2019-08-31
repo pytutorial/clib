@@ -90,10 +90,21 @@
         _list_size(lst) = sz;                                                        \
     }
 
-#define at(lst, i)  (*                                                                                  \
-                        (((unsigned)(i) < (unsigned)_list_size(lst) && (lst).scope->state == VALID) ?   \
-                            (_list_items(lst) + (i)) :                                                  \
-                            (typeof(_list_items(lst)))QUIT(ERR_AT, __FILE__, __LINE__).ptr)             \
+#define pop(lst)    (                                                                                       \
+                        *(                                                                                  \
+                            (0 < _list_size(lst) && (lst).scope->state == VALID && !(lst)._readonly) ?      \
+                                (_list_items(lst) + (--_list_size(lst))) :                                  \
+                                (typeof(_list_items(lst))) QUIT(ERR_POP, __FILE__, __LINE__).ptr            \
+                        )                                                                                   \
+                    )
+
+
+#define at(lst, i)  (                                                                                       \
+                        *(                                                                                  \
+                            ((unsigned)(i) < (unsigned)_list_size(lst) && (lst).scope->state == VALID) ?    \
+                                (_list_items(lst) + (i)) :                                                  \
+                                (typeof(_list_items(lst))) QUIT(ERR_AT, __FILE__, __LINE__).ptr             \
+                        )                                                                                   \
                     )
 
 #if ALWAYS_BOUND_CHECK
@@ -110,12 +121,6 @@
                             ((lst)._state == VALID && (lst).scope->state == VALID) ?            \
                             _list_size(lst) : QUIT(ERR_LIST_SIZE, __FILE__, __LINE__).value     \
                         )
-
-#define pop(lst)    (*( \
-                        (0 < _list_size(lst) && (lst).scope->state == VALID && !(lst)._readonly) ?  \
-                            (_list_items(lst) + (--_list_size(lst))) :                              \
-                            (typeof(_list_items(lst)))QUIT(ERR_POP, __FILE__, __LINE__).ptr)        \
-                    )
 
 #define list_data_ptr(lst) (*(lst)._p_items)
 
