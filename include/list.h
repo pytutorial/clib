@@ -139,8 +139,8 @@
 
 #define clear_list(lst) resize_list(lst, 0)
 
-#define size_of_list(lst) ( \
-    ((lst)._state == VALID && (lst).scope->state == VALID) ? _list_size(lst) : QUIT(ERR_LIST_SIZE, __FILE__, __LINE__).value)
+#define size_of_list(lst)   (((lst)._state == VALID && (lst).scope->state == VALID) ? \
+                                _list_size(lst) : QUIT(ERR_LIST_SIZE, __FILE__, __LINE__).value)
 
 #define list_data_ptr(lst)  (((lst)._state == VALID && (lst).scope->state == VALID) ? \
                                 (*(lst)._p_items) : (typeof(*(lst)._p_items)) QUIT(ERR_LIST_DATA_PTR, __FILE__, __LINE__).ptr)
