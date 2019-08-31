@@ -100,7 +100,7 @@
 
 #define at(lst, i) (                                                                    \
     *(                                                                                  \
-        ((unsigned)(i) < (unsigned)_list_size(lst) && (lst).scope->state == VALID) ?    \ 
+        ((unsigned)(i) < (unsigned)_list_size(lst) && (lst).scope->state == VALID) ?    \
             (_list_items(lst) + (i)) :                                                  \
             (typeof(_list_items(lst)))QUIT(ERR_AT, __FILE__, __LINE__).ptr)             \
     )

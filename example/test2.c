@@ -29,7 +29,7 @@ void read_data(ListItem X, ListDouble Y)
 
     ListListDouble data_set = new_list_list_double(scope, 0);
 
-    read_csv("admit.csv", ",", 1, data_set);
+    data_set = read_csv(scope, "admit.csv", ",", 1);
 
     for (int i = 0; i < size_of_list(data_set); i++)
     {

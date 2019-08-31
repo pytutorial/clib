@@ -236,8 +236,7 @@ void build(TreeNodeObject nodeObj, int input_dim, ListListDouble instances, List
 
 DataSet read_data(Scope *scope)
 {
-    ListListDouble table = new_list_list_double(scope, 0);
-    read_csv("admit.csv", ",", 1, table);
+    ListListDouble table = read_csv(scope, "admit.csv", ",", 1);
 
     DataSet data_set;
     memset(&data_set, 0, sizeof(DataSet));

@@ -5,33 +5,35 @@
 
 #define MAX_LINE_LENGTH 102400
 
-void read_csv(const char *fn, const char *delimiter, int skip_header, ListListDouble table)
+ListListDouble read_csv(Scope* scope, const char* fn, const char* delimiter, int skip_header)
 {
+    ListListDouble table = new_list_list_double(scope, 0);
+
     FILE *f = fopen(fn, "rt");
     if (!f)
     {
         printf("Cannot open file \"%s\" \n", fn);
-        return;
+        return table;
     }
 
     int i = 0;
 
     while (f && !feof(f))
     {
-        Scope *scope = new_scope();
+        Scope *scope2 = new_scope();
 
-        char *line = zero_alloc(scope, MAX_LINE_LENGTH + 1);
+        char *line = zero_alloc(scope2, MAX_LINE_LENGTH + 1);
         fgets(line, MAX_LINE_LENGTH, f);
 
         if (i > 0 || !skip_header)
         {
-            String st = new_string(scope, line);
+            String st = new_string(scope2, line);
             ListString lst = split_string(st, delimiter);
             int n_items = size_of_list(lst);
 
             if (n_items > 0)
             {
-                ListDouble row = new_list_double(table.scope, n_items);
+                ListDouble row = new_list_double(scope, n_items);
 
                 for (int i = 0; i < n_items; i++)
                 {
@@ -44,8 +46,9 @@ void read_csv(const char *fn, const char *delimiter, int skip_header, ListListDo
 
         i += 1;
 
-        free_scope(scope);
+        free_scope(scope2);
     }
 
     fclose(f);
+    return table;
 }
