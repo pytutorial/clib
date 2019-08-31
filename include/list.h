@@ -10,6 +10,7 @@
 #define ERR_REMOVE_AT           "Remove item from list : invalid list ,or readonly list, or index out of range"
 #define ERR_POP                 "Pop invalid or empty list"
 #define ERR_LIST_SIZE           "Get size of invalid list"
+#define ERR_LIST_IS_EMPTY       "Check emptiness of and invalid list"
 #define ERR_RESIZE              "Resize invalid or readonly list"
 #define ERR_PUSH                "Push to invalid or readonly list"
 #define ERR_SOURCE_INDEX        "Source index out of range"
@@ -130,7 +131,9 @@
 #define at_q(lst, i) _list_items(lst)[i]
 #endif
 
-#define is_empty_list(lst) (_list_size(lst) == 0)
+#define is_empty_list(lst) (((lst)._state == VALID && (lst).scope->state == VALID) ? \
+                                (_list_size(lst) == 0) : QUIT(ERR_LIST_IS_EMPTY, __FILE__, __LINE__).value)
+
 #define is_null_list(lst)  ((lst)._p_items == NULL && (lst).scope == NULL)
 
 #define clear_list(lst) resize_list(lst, 0)
