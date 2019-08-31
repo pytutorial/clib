@@ -12,6 +12,7 @@
 #define ERR_LIST_SIZE           "Get size of invalid list"
 #define ERR_LIST_IS_EMPTY       "Check emptiness of and invalid list"
 #define ERR_RESIZE              "Resize invalid or readonly list"
+#define ERR_LIST_DATA_PTR       "Get data pointer of an invalid list"
 #define ERR_PUSH                "Push to invalid or readonly list"
 #define ERR_SOURCE_INDEX        "Source index out of range"
 #define ERR_DEST_INDEX          "Destination index out of range"
@@ -141,7 +142,8 @@
 #define size_of_list(lst) ( \
     ((lst)._state == VALID && (lst).scope->state == VALID) ? _list_size(lst) : QUIT(ERR_LIST_SIZE, __FILE__, __LINE__).value)
 
-#define list_data_ptr(lst) (*(lst)._p_items)
+#define list_data_ptr(lst)  (((lst)._state == VALID && (lst).scope->state == VALID) ? \
+                                (*(lst)._p_items) : (typeof(*(lst)._p_items)) QUIT(ERR_LIST_DATA_PTR, __FILE__, __LINE__).ptr)
 
 #define _check_range(lst, start, end) (start >= 0 && start <= end && end <= size_of_list(lst))
 
