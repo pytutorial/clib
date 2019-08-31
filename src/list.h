@@ -91,13 +91,19 @@
         _list_size(lst) = sz;                                                        \
     }
 
-#define pop(lst) ( \
-    *(             \
-        (0 < _list_size(lst) && (lst).scope->state == VALID && !(lst)._readonly) ? (_list_items(lst) + (--_list_size(lst))) : (typeof(_list_items(lst)))QUIT(ERR_POP, __FILE__, __LINE__).ptr))
+#define pop(lst) (                                                                      \
+    *(                                                                                  \
+        (0 < _list_size(lst) && (lst).scope->state == VALID && !(lst)._readonly) ?      \
+            (_list_items(lst) + (--_list_size(lst))) :                                  \
+             (typeof(_list_items(lst)))QUIT(ERR_POP, __FILE__, __LINE__).ptr)           \
+    )
 
-#define at(lst, i) ( \
-    *(               \
-        ((unsigned)(i) < (unsigned)_list_size(lst) && (lst).scope->state == VALID) ? (_list_items(lst) + (i)) : (typeof(_list_items(lst)))QUIT(ERR_AT, __FILE__, __LINE__).ptr))
+#define at(lst, i) (                                                                    \
+    *(                                                                                  \
+        ((unsigned)(i) < (unsigned)_list_size(lst) && (lst).scope->state == VALID) ?    \ 
+            (_list_items(lst) + (i)) :                                                  \
+            (typeof(_list_items(lst)))QUIT(ERR_AT, __FILE__, __LINE__).ptr)             \
+    )
 
 #define remove_list_at(lst, index)                                                                                                     \
     {                                                                                                                                  \
