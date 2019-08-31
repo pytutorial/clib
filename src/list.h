@@ -6,15 +6,15 @@
 
 #define ALWAYS_BOUND_CHECK 0
 
-#define ERR_AT "Invalid list or list index out of range"
-#define ERR_POP "Pop invalid or empty list"
-#define ERR_LIST_SIZE "Get size of invalid list"
-#define ERR_RESIZE "Resize invalid or readonly list"
-#define ERR_PUSH "Push to invalid or readonly list"
-#define ERR_SOURCE_INDEX "Source index out of range"
-#define ERR_DEST_INDEX "Destination index out of range"
-#define ERR_SRC_DST_TYPE "Source and destination list having different types"
-#define ERR_LIST_VIEW "Invalid list or get view of list out of range"
+#define ERR_AT                          "Invalid list or list index out of range"
+#define ERR_POP                         "Pop invalid or empty list"
+#define ERR_LIST_SIZE                   "Get size of invalid list"
+#define ERR_RESIZE                      "Resize invalid or readonly list"
+#define ERR_PUSH                        "Push to invalid or readonly list"
+#define ERR_SOURCE_INDEX                "Source index out of range"
+#define ERR_DEST_INDEX                  "Destination index out of range"
+#define ERR_SRC_DST_TYPE                "Source and destination list having different types"
+#define ERR_LIST_VIEW                   "Invalid list or get view of list out of range"
 
 #define List(type)        \
     struct                \

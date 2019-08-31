@@ -7,7 +7,22 @@ int main()
     MapStringInt m2 = new_map_string_int(scope);
     MapIntString m3 = new_map_int_string(scope);
     
-    map_put(m1, 5, 10);
+    
+    map_put(m1, 2, 1);
+    map_put(m1, 4, 2);
+    map_put(m1, 6, 3);
+    map_put(m1, 8, 4);
+    map_put(m1, 10, 5);
+
+    ListInt keys = new_list_int(scope, 0);
+    ListInt values = new_list_int(scope, 0);
+    get_map_items(m1, keys, values);
+
+    for(int i = 0; i < list_size(keys); i++)
+    {
+        printf("%d --> %d\n", at_q(keys, i), at_q(values, i));
+    }
+    
     map_put(m2, new_string(scope, "two"), 2);
     map_put(m3, 10, new_string(scope, "ten"));
     
