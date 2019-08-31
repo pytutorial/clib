@@ -16,7 +16,7 @@ void fprint_item(FILE *f, Item item)
     fprintf(f, "{gre : %f, gpa : %f, rank : %f}", item.gre, item.gpa, item.rank);
 }
 
-DECLARE_LIST_TYPE(Item, ListItem, new_list_item);
+DECLARE_LIST_TYPE(ListItem, Item, new_list_item);
 
 double randf()
 {

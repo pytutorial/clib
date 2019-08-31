@@ -34,6 +34,8 @@
 
 #define _list_cap(lst) (*(lst)._p_capacity)
 
+#define null_list      { NULL, NULL, NULL, INVALID, 0, NULL }
+
 #define _new_list(type, scope, size)              \
     {                                             \
         p_data_alloc(scope, size * sizeof(type)), \
@@ -42,12 +44,12 @@
             VALID, 0, scope                       \
     }
 
-#define DECLARE_LIST_TYPE(type, ListType, new_list_func_name)         \
-    typedef List(type) ListType;                                      \
+#define DECLARE_LIST_TYPE(ListType, T, new_list_func_name)            \
+    typedef List(T) ListType;                                         \
                                                                       \
     inline static ListType new_list_func_name(Scope *scope, int size) \
     {                                                                 \
-        return (ListType)_new_list(type, scope, size);                \
+        return (ListType)_new_list(T, scope, size);                   \
     }
 
 #define _ensure_list_cap(lst, cap)                         \
@@ -129,6 +131,7 @@
 #endif
 
 #define is_empty_list(lst) (_list_size(lst) == 0)
+#define is_null_list(lst)  ((lst)._p_items == NULL && (lst).scope == NULL)
 
 #define clear_list(lst) resize_list(lst, 0)
 
@@ -213,11 +216,11 @@
         fprintf(f, "]\n");                        \
     }
 
-DECLARE_LIST_TYPE(int, ListInt, new_list_int);
-DECLARE_LIST_TYPE(char, ListChar, new_list_char);
-DECLARE_LIST_TYPE(long, ListLong, new_list_long);
-DECLARE_LIST_TYPE(short, ListShort, new_list_short);
-DECLARE_LIST_TYPE(double, ListDouble, new_list_double);
-DECLARE_LIST_TYPE(float, ListFloat, new_list_float);
+DECLARE_LIST_TYPE(ListInt, int, new_list_int);
+DECLARE_LIST_TYPE(ListChar, char, new_list_char);
+DECLARE_LIST_TYPE(ListLong, long, new_list_long);
+DECLARE_LIST_TYPE(ListShort, short, new_list_short);
+DECLARE_LIST_TYPE(ListDouble, double, new_list_double);
+DECLARE_LIST_TYPE(ListFloat, float, new_list_float);
 
 #endif

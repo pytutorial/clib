@@ -161,7 +161,7 @@ static inline int hash_int(int x) { return x; }
 static inline bool cmp_int(int x1, int x2) { return x1 == x2; }
 
 DECLARE_MAP_TYPE(MapIntInt, int, int, hash_int, cmp_int, new_map_int_int);
-DECLARE_MAP_TYPE(MapIntString, int, String, hash_int, cmp_int, new_map_int_string);
-DECLARE_MAP_TYPE(MapStringInt, String, int, hash_string, string_equal, new_map_string_int);
+//DECLARE_MAP_TYPE(MapIntString, int, String, hash_int, cmp_int, new_map_int_string);
+//DECLARE_MAP_TYPE(MapStringInt, String, int, hash_string, string_equal, new_map_string_int);
 
 #endif

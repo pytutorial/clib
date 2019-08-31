@@ -13,7 +13,7 @@ typedef struct
     Scope *scope;
 } String;
 
-DECLARE_LIST_TYPE(String, ListString, new_list_string);
+DECLARE_LIST_TYPE(ListString, String, new_list_string);
 
 int str_len(String st);
 
