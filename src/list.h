@@ -90,8 +90,11 @@
         _list_size(lst) = sz;                                                        \
     }
 
-#define at(lst, i) (*( \
-    ((unsigned)(i) < (unsigned)_list_size(lst) && (lst).scope->state == VALID) ? (_list_items(lst) + (i)) : (typeof(_list_items(lst)))QUIT(ERR_AT, __FILE__, __LINE__).ptr))
+#define at(lst, i)  (*                                                                                  \
+                        (((unsigned)(i) < (unsigned)_list_size(lst) && (lst).scope->state == VALID) ?   \
+                            (_list_items(lst) + (i)) :                                                  \
+                            (typeof(_list_items(lst)))QUIT(ERR_AT, __FILE__, __LINE__).ptr)             \
+                    )
 
 #if ALWAYS_BOUND_CHECK
 #define at_q(lst, i) at(lst, i)
