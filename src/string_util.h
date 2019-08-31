@@ -45,4 +45,6 @@ bool string_equal(String st1, String st2);
 
 void print_string(String st);
 
+int hash_string(String st);
+
 #endif

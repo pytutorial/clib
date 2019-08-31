@@ -16,6 +16,9 @@ int main()
     push(lst, 1);
     push(lst, 6);
 
+    remove_list_at(lst, 6);
+    remove_list_at(lst, 0);
+
     fprint_list(stdout, lst, "%0.2f");
 
     ListDouble lst2 = new_list_double(scope, 2);

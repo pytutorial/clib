@@ -7,6 +7,7 @@
 #define ALWAYS_BOUND_CHECK 0
 
 #define ERR_AT                          "Invalid list or list index out of range"
+#define ERR_REMOVE_AT                   "Remove item from list : invalid list ,or readonly list, or index out of range"
 #define ERR_POP                         "Pop invalid or empty list"
 #define ERR_LIST_SIZE                   "Get size of invalid list"
 #define ERR_RESIZE                      "Resize invalid or readonly list"
@@ -106,6 +107,24 @@
                                 (typeof(_list_items(lst))) QUIT(ERR_AT, __FILE__, __LINE__).ptr             \
                         )                                                                                   \
                     )
+
+#define remove_list_at(lst, index)                                  \
+    {                                                               \
+        if ((unsigned)(index) >= (unsigned) _list_size(lst)         \
+            || (lst)._state != VALID                                \
+            || (lst).scope->state != VALID                          \
+            || (lst)._readonly)                                     \
+        {                                                           \
+            QUIT(ERR_REMOVE_AT, __FILE__, __LINE__);                \
+        }                                                           \
+                                                                    \
+        for(int i = index; i < _list_size(lst) - 1; i++)            \
+        {                                                           \
+            _list_items(lst)[i] = _list_items(lst)[i+1];            \
+        }                                                           \
+        _list_size(lst) -= 1;                                       \
+    }
+
 
 #if ALWAYS_BOUND_CHECK
 #define at_q(lst, i) at(lst, i)

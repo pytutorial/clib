@@ -177,3 +177,12 @@ void print_string(String st)
 
     puts(st._data);
 }
+
+int hash_string(String st)
+{
+    int *p = (int *)(str_data(st));
+    int hash = 0;
+    for (int i = 0; i < str_len(st) / 4; i++)
+        hash |= *p++;
+    return hash;
+}
