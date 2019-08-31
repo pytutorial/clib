@@ -8,16 +8,16 @@
 
 #define SET_BUCKET_SIZE 1024
 
-#define Set(T)                                                                                                                     \
-    struct                                                                                                                         \
-    {                                                                                                                              \
-        List(List(T)) _table;                                                                                                      \
-        int *_p_size;                                                                                                              \
-        int *_p_active_bucket;                                                                                                     \
-        int _state;                                                                                                                \
-        int (*_hash_func)(T);                                                                                                      \
-        bool (*_cmp_func)(T, T);                                                                                                   \
-        Scope *scope;                                                                                                              \
+#define Set(T)                                                                                                                    \
+    struct                                                                                                                        \
+    {                                                                                                                             \
+        List(List(T)) _table;                                                                                                     \
+        int *_p_size;                                                                                                             \
+        int *_p_active_bucket;                                                                                                    \
+        int _state;                                                                                                               \
+        int (*_hash_func)(T);                                                                                                     \
+        bool (*_cmp_func)(T, T);                                                                                                  \
+        Scope *scope;                                                                                                             \
     }
 
 #define _set_item_type(s) typeof(at(at_q((s)._table, 0), 0))
@@ -145,20 +145,20 @@
         }                                                                                                                         \
     }
 
-#define print_set(s, print_item)                                                                                                   \
-    {                                                                                                                              \
-        Scope* scope = new_scope();                                                                                                \
-        _set_item_type(s) item;                                                                                                    \
-        List(typeof(item)) items = _new_list(typeof(item), scope, 0);                                                              \
-        get_set_items(s, items);                                                                                                   \
-        printf("{");                                                                                                               \
-        for(int i = 0; i < size_of_list(items); i++)                                                                               \
-        {                                                                                                                          \
-            print_item(at_q(items, i));                                                                                            \
-            if(i < size_of_list(items) - 1) printf(" , ");                                                                         \
-        }                                                                                                                          \
-        printf("}\n");                                                                                                             \
-        free_scope(scope);                                                                                                         \
+#define print_set(s, print_item)                                                                                                  \
+    {                                                                                                                             \
+        Scope* scope = new_scope();                                                                                               \
+        _set_item_type(s) item;                                                                                                   \
+        List(typeof(item)) items = _new_list(typeof(item), scope, 0);                                                             \
+        get_set_items(s, items);                                                                                                  \
+        printf("{");                                                                                                              \
+        for(int i = 0; i < size_of_list(items); i++)                                                                              \
+        {                                                                                                                         \
+            print_item(at_q(items, i));                                                                                           \
+            if(i < size_of_list(items) - 1) printf(" , ");                                                                        \
+        }                                                                                                                         \
+        printf("}\n");                                                                                                            \
+        free_scope(scope);                                                                                                        \
     }
 
 static inline int hash_int(int x) { return x; }
