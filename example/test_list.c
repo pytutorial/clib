@@ -16,8 +16,8 @@ int main()
     push(lst, 1);
     push(lst, 6);
 
-    remove_list_at(lst, 6);
-    remove_list_at(lst, 0);
+    remove_list_element_at(lst, 6);
+    remove_list_element_at(lst, 0);
 
     print_list(lst, "%0.2f");
 
