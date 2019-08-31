@@ -133,7 +133,7 @@
         {                                                                \
             if (((m)._cmp_func)(_key, at_q(lst_items, i).key))           \
             {                                                            \
-                remove_list_at(lst_items, i);                            \
+                remove_list_element_at(lst_items, i);                    \
                 break;                                                   \
             }                                                            \
         }                                                                \

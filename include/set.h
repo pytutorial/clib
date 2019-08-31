@@ -122,7 +122,7 @@
         {                                                                \
             if (((s)._cmp_func)(item, at_q(lst_items, i)))               \
             {                                                            \
-                remove_list_at(lst_items, i);                            \
+                remove_list_element_at(lst_items, i);                    \
                 break;                                                   \
             }                                                            \
         }                                                                \

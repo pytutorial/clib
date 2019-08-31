@@ -107,7 +107,7 @@
             (typeof(_list_items(lst)))QUIT(ERR_AT, __FILE__, __LINE__).ptr)             \
     )
 
-#define remove_list_at(lst, index)                              \
+#define remove_list_element_at(lst, index)                      \
     {                                                           \
         if ((unsigned)(index) >= (unsigned)_list_size(lst)      \
             || (lst)._state != VALID                            \
