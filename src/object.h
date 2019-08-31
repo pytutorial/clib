@@ -4,11 +4,11 @@
 #include <stdio.h>
 
 typedef int bool;
-#define TRUE 1
-#define FALSE 0
+#define TRUE                        1
+#define FALSE                       0
 
-#define VALID 0x55555555
-#define INVALID -1
+#define VALID                       0x55555555
+#define INVALID                     -1
 
 typedef union {
     int value;
@@ -23,8 +23,8 @@ typedef struct
     int state;
 } Scope;
 
-#define ERR_RAW_PTR "Get pointer of invalid object"
-#define ERR_ATTR "Get attribute of invalid object"
+#define ERR_RAW_PTR                 "Get pointer of invalid object"
+#define ERR_ATTR                    "Get attribute of invalid object"
 
 #define Object(type)  \
     struct            \
