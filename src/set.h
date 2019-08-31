@@ -43,7 +43,7 @@
         return s;                                                                              \
     }
 
-#define size_of_set(s) ( \
+#define set_size(s) ( \
     ((s)._state == VALID && (s).scope->state == VALID) ? *(s)._p_size : QUIT(ERR_SET, __FILE__, __LINE__).value)
 
 #define add_to_set(s, item)                                                 \
