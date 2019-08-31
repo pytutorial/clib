@@ -23,7 +23,7 @@
         Scope *scope;                                                                                                              \
     }
 
-#define _item_type(m) typeof(at(at_q((m)._table, 0), 0))
+#define _map_item_type(m) typeof(at(at_q((m)._table, 0), 0))
 
 #define DECLARE_MAP_TYPE(MapType, K, V, hash_func, cmp_func, new_map_func_name)                                                    \
     typedef Map(K, V) MapType;                                                                                                     \
@@ -41,7 +41,7 @@
                                                                                                                                    \
         for (int i = 0; i < BUCKET_SIZE; i++)                                                                                      \
         {                                                                                                                          \
-            at_q(m._table, i) = (typeof(at_q(m._table, i)))_new_list(_item_type(m), scope, 0);                                     \
+            at_q(m._table, i) = (typeof(at_q(m._table, i)))_new_list(_map_item_type(m), scope, 0);                                 \
         }                                                                                                                          \
         return m;                                                                                                                  \
     }
@@ -85,7 +85,7 @@
         }                                                                                                                          \
         if (!contained)                                                                                                            \
         {                                                                                                                          \
-            _item_type(m) new_items = {_key, _value};                                                                              \
+            _map_item_type(m) new_items = {_key, _value};                                                                          \
             push(lst_items, new_items);                                                                                            \
             *(m)._p_size += 1;                                                                                                     \
         }                                                                                                                          \
@@ -160,7 +160,7 @@
 #define print_map(m, print_key, print_value)                                                                                       \
     {                                                                                                                              \
         Scope* scope = new_scope();                                                                                                \
-        _item_type(m) item;                                                                                                        \
+        _map_item_type(m) item;                                                                                                    \
         List(typeof(item.key)) keys = _new_list(typeof(item.key), scope, 0);                                                       \
         List(typeof(item.value)) values = _new_list(typeof(item.value), scope, 0);                                                 \
         get_map_items(m, keys, values);                                                                                            \

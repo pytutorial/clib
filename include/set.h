@@ -20,7 +20,7 @@
         Scope *scope;                                                                                                              \
     }
 
-#define _item_type(s) typeof(at(at_q((s)._table, 0), 0))
+#define _set_item_type(s) typeof(at(at_q((s)._table, 0), 0))
 
 #define DECLARE_SET_TYPE(SetType, T, hash_func, cmp_func, new_set_func_name)                                                      \
     typedef Set(T) SetType;                                                                                                       \
@@ -38,7 +38,7 @@
                                                                                                                                   \
         for (int i = 0; i < BUCKET_SIZE; i++)                                                                                     \
         {                                                                                                                         \
-            at_q(s._table, i) = (typeof(at_q(s._table, i)))_new_list(_item_type(s), scope, 0);                                    \
+            at_q(s._table, i) = (typeof(at_q(s._table, i)))_new_list(_set_item_type(s), scope, 0);                                \
         }                                                                                                                         \
         return s;                                                                                                                 \
     }
@@ -143,6 +143,22 @@
                 push(lst, at_q(lst_items, j));                                                                                    \
             }                                                                                                                     \
         }                                                                                                                         \
+    }
+
+#define print_set(s, print_item)                                                                                                   \
+    {                                                                                                                              \
+        Scope* scope = new_scope();                                                                                                \
+        _set_item_type(s) item;                                                                                                    \
+        List(typeof(item)) items = _new_list(typeof(item), scope, 0);                                                              \
+        get_set_items(s, items);                                                                                                   \
+        printf("{");                                                                                                               \
+        for(int i = 0; i < size_of_list(items); i++)                                                                               \
+        {                                                                                                                          \
+            print_item(at_q(items, i));                                                                                            \
+            if(i < size_of_list(items) - 1) printf(" , ");                                                                         \
+        }                                                                                                                          \
+        printf("}\n");                                                                                                             \
+        free_scope(scope);                                                                                                         \
     }
 
 static inline int hash_int(int x) { return x; }

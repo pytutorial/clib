@@ -3,7 +3,12 @@
 
 void print_string(String st)
 {
-    printf("%s", str_data(st));
+    printf("\"%s\"", str_data(st));
+}
+
+void print_int(int i)
+{
+    printf("%d", i);
 }
 
 int main()
@@ -18,18 +23,13 @@ int main()
     printf("%s\n", b?"TRUE" : "FALSE");
 
     remove_set_item(s1, 2);
-    ListInt l1 = new_list_int(scope, 0);
-    get_set_items(s1, l1);
-    print_list(l1, "%d");
+    print_set(s1, print_int);
 
     SetString s2 = new_set_string(scope); 
     add_to_set(s2, new_string(scope, "Hello"));
     add_to_set(s2, new_string(scope, "This is a test"));
 
-    ListString lst = new_list_string(scope, 0);
-    get_set_items(s2, lst);
-
-    print_list_obj(lst, print_string);
+    print_set(s2, print_string);
 
     free_scope(scope);
     return 0;
