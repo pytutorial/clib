@@ -14,9 +14,9 @@ typedef struct _StringData
 
 DECLARE_LIST(ListString, String);
 
-int str_len(String st);
+int stringLen(String st);
 
-char *str_data(String st);
+char *stringDataPtr(String st);
 
 String newNString(Scope scope, const char *src, int len);
 
@@ -24,24 +24,24 @@ String newString(Scope scope, const char *src);
 
 String newStringFmt(Scope scope, const char *fmt, ...);
 
-String concat_string(String st1, String st2);
+String concatString(String st1, String st2);
 
-String concat_string_with_ptr(String st, char *p);
+String concatStringWithPtr(String st, char *p);
 
-String sub_string(String st, int start, int end);
+String subString(String st, int start, int end);
 
-String right_string(String st, int start);
+String rightString(String st, int start);
 
-String left_string(String st, int end);
+String leftString(String st, int end);
 
-int find_char(String st, char needle);
+int findChar(String st, char needle);
 
-int find_string(String st, const char *needle);
+int findString(String st, const char *needle);
 
-ListString split_string(String st, const char *delimiter);
+ListString splitString(String st, const char *delimiter);
 
-bool string_equal(String st1, String st2);
+bool stringEqual(String st1, String st2);
 
-int hash_string(String st);
+int hashString(String st);
 
 #endif

@@ -6,29 +6,29 @@
 
 DECLARE_OBJECT(Integer, int);
 
-void print_int(int x) { printf("%d", x); }
+void printInt(int x) { printf("%d", x); }
 
 int main()
 {
     Scope scope = newScope();
 
     Integer p = newInteger(scope);
-    *raw_ptr(p) = 100;
+    *objectRawPtr(p) = 100;
 
     ListInt lst = newListInt(scope, 10);
 
-    for (int i = 0; i < list_size(lst); i++)
+    for (int i = 0; i < listSize(lst); i++)
     {
-        list_at(lst, i) = i;
+        listAt(lst, i) = i;
     }
 
-    printf("%d\n", list_pop(lst));
+    printf("%d\n", listPop(lst));
 
-    print_list(lst, print_int);
+    printList(lst, printInt);
 
-    printf("%d\n", *raw_ptr(p));
+    printf("%d\n", *objectRawPtr(p));
 
-    free_scope(scope);
+    freeScope(scope);
 
     return 0;
 }

@@ -1,27 +1,27 @@
 #include "map.h"
 
 DECLARE_LIST(ListListInt, ListInt);
-DECLARE_MAP(Int2ListListInt, int, ListListInt, hash_int, int_equal);
+DECLARE_MAP_TYPE(Int2ListListInt, int, ListListInt, hashInt, intEqual);
 
-MapInt2ListListInt group_by(ListListInt table, int feature_id)
+MapInt2ListListInt groupBy(ListListInt table, int featureId)
 {
     MapInt2ListListInt m = newMapInt2ListListInt(table->scope);
-    for(int i = 0; i < list_size(table); i++)
+    for(int i = 0; i < listSize(table); i++)
     {
-        ListInt row = list_at_q(table, i);
-        int key = list_at(row, feature_id);
+        ListInt row = listAtQ(table, i);
+        int key = listAt(row, featureId);
 
-        ListListInt group_items = map_get(m, key, NULL);
+        ListListInt groupItems = mapGet(m, key, NULL);
         
-        if(group_items == NULL)
+        if(groupItems == NULL)
         {
-            group_items = newListListInt(table->scope, 1);
-            list_at_q(group_items, 0) = row;
-            map_put(m, key, group_items);
+            groupItems = newListListInt(table->scope, 1);
+            listAtQ(groupItems, 0) = row;
+            mapPut(m, key, groupItems);
         }
         else
         {
-            list_add(group_items, row);            
+            listAdd(groupItems, row);            
         }
     }
 
@@ -31,34 +31,34 @@ MapInt2ListListInt group_by(ListListInt table, int feature_id)
 ListInt new_row(Scope scope, int* _row, int M)
 {
     ListInt row = newListInt(scope, M);
-    memcpy(list_data_ptr(row), _row, M * sizeof(int));
+    memcpy(listDataPtr(row), _row, M * sizeof(int));
     return row;
 }
 
-ListListInt new_table(Scope scope, int* _table, int N, int M)
+ListListInt newTable(Scope scope, int* _table, int N, int M)
 {
     ListListInt table = newListListInt(scope, N);
     for(int i = 0; i < N; i++)
     {
-        list_at_q(table, i) = new_row(scope, _table, M);
+        listAtQ(table, i) = new_row(scope, _table, M);
         _table += M;
     }
     return table;
 }
 
-void print_int(int i)
+void printInt(int i)
 {
     printf("%d", i);
 }
 
-void print_row(ListInt row)
+void printRow(ListInt row)
 {
-    print_list(row, print_int);
+    printList(row, printInt);
 }
 
-void print_table(ListListInt table)
+void printTable(ListListInt table)
 {
-    print_list(table, print_row);
+    printList(table, printRow);
 }
 
 int main()
@@ -75,13 +75,13 @@ int main()
                         4, 3, 5, 6,
                     };
 
-    ListListInt table = new_table(scope, data, 8, 4);
+    ListListInt table = newTable(scope, data, 8, 4);
 
-    print_table(table);
+    printTable(table);
 
-    MapInt2ListListInt groups = group_by(table, 0);
-    print_map(groups, print_int, print_table);
+    MapInt2ListListInt groups = groupBy(table, 0);
+    printMap(groups, printInt, printTable);
 
-    free_scope(scope);
+    freeScope(scope);
     return 0;
 }

@@ -23,99 +23,99 @@
 #define _printMapFunc(K2V)                      _printMap##K2V
 #define _newMapFunc(K2V)                        newMap##K2V
 
-#define _DECLARE_MAP_TYPE(K2V, K, V)                                                                                    \
-    typedef struct                                                                                                      \
-    {                                                                                                                   \
-        K key;                                                                                                          \
-        V value;                                                                                                        \
-    } _ItemType(K2V);                                                                                                   \
-    DECLARE_LIST(_ListItemType(K2V), _ItemType(K2V));                                                                   \
-    DECLARE_LIST(_ListListItemType(K2V), _ListItemType(K2V));                                                           \
-    typedef struct _MapTypeData(K2V)                                                                                    \
-    {                                                                                                                   \
-        _ListListItemType(K2V) _table;                                                                                  \
-        int _size;                                                                                                      \
-        int _n_active_bucket;                                                                                           \
-        int (*_hash_func)(K);                                                                                           \
-        bool (*_equal_func)(K, K);                                                                                      \
-        V (*_get) (struct _MapTypeData(K2V) * m, K key, V default_value);                                               \
-        V (*_get_err) (V default_value);                                                                                \
-        void (*_put)(struct _MapTypeData(K2V) * m, K key, V value);                                                     \
-        bool (*_contains_key)(struct _MapTypeData(K2V) * m, K key);                                                     \
-        void (*_remove)(struct _MapTypeData(K2V) * m, K key);                                                           \
-        _ListItemType(K2V) (*_items)(struct _MapTypeData(K2V) * m);                                                     \
-        _ListItemType(K2V) (*_items_err)(struct _MapTypeData(K2V) * m);                                                 \
-        void (*_print)(struct _MapTypeData(K2V) * m, void (*print_key_func)(K key), void (*print_value_func)(V value)); \
-        Scope scope;                                                                                                    \
-    }                                                                                                                   \
+#define _DECLARE_MAP_TYPE(K2V, K, V)                                                                                \
+    typedef struct                                                                                                  \
+    {                                                                                                               \
+        K key;                                                                                                      \
+        V value;                                                                                                    \
+    } _ItemType(K2V);                                                                                               \
+    DECLARE_LIST(_ListItemType(K2V), _ItemType(K2V));                                                               \
+    DECLARE_LIST(_ListListItemType(K2V), _ListItemType(K2V));                                                       \
+    typedef struct _MapTypeData(K2V)                                                                                \
+    {                                                                                                               \
+        _ListListItemType(K2V) _table;                                                                              \
+        int _size;                                                                                                  \
+        int _nActiveBucket;                                                                                         \
+        int (*_hashFunc)(K);                                                                                        \
+        bool (*_equalFunc)(K, K);                                                                                   \
+        V (*_get) (struct _MapTypeData(K2V) * m, K key, V defaultValue);                                            \
+        V (*_getErr) (V defaultValue);                                                                              \
+        void (*_put)(struct _MapTypeData(K2V) * m, K key, V value);                                                 \
+        bool (*_containsKey)(struct _MapTypeData(K2V) * m, K key);                                                  \
+        void (*_remove)(struct _MapTypeData(K2V) * m, K key);                                                       \
+        _ListItemType(K2V) (*_items)(struct _MapTypeData(K2V) * m);                                                 \
+        _ListItemType(K2V) (*_itemsErr)(struct _MapTypeData(K2V) * m);                                              \
+        void (*_print)(struct _MapTypeData(K2V) * m, void (*printKeyFunc)(K key), void (*printValueFunc)(V value)); \
+        Scope scope;                                                                                                \
+    }                                                                                                               \
     *_MapType(K2V);
 
-#define _DECLARE_MAP_GET(K2V, K, V)                                           \
-    inline static V _mapGetFunc(K2V)(_MapType(K2V) m, K key, V default_value) \
-    {                                                                         \
-        int hash = (m->_hash_func)(key);                                      \
-        int index = (unsigned)hash % m->_table->_size;                        \
-        _ListItemType(K2V) lst_item = list_at_q(m->_table, index);            \
-        for (int i = 0; i < lst_item->_size; i++)                             \
-        {                                                                     \
-            if ((m->_equal_func)(key, list_at_q(lst_item, i).key))            \
-            {                                                                 \
-                return list_at_q(lst_item, i).value;                          \
-            }                                                                 \
-        }                                                                     \
-        return default_value;                                                 \
+#define _DECLARE_MAP_TYPE_GET(K2V, K, V)                                     \
+    inline static V _mapGetFunc(K2V)(_MapType(K2V) m, K key, V defaultValue) \
+    {                                                                        \
+        int hash = (m->_hashFunc)(key);                                      \
+        int index = (unsigned)hash % m->_table->_size;                       \
+        _ListItemType(K2V) lstItem = listAtQ(m->_table, index);              \
+        for (int i = 0; i < lstItem->_size; i++)                             \
+        {                                                                    \
+            if ((m->_equalFunc)(key, listAtQ(lstItem, i).key))               \
+            {                                                                \
+                return listAtQ(lstItem, i).value;                            \
+            }                                                                \
+        }                                                                    \
+        return defaultValue;                                                 \
     }
 
-#define _DECLARE_MAP_GET_ERR(K2V, K, V)                  \
-    inline static V _mapGetErrFunc(K2V)(V default_value) \
-    {                                                    \
-        QUIT(ERR_MAP, __FILE__, __LINE__);               \
-        return default_value;                            \
+#define _DECLARE_MAP_TYPE_GET_ERR(K2V, K, V)            \
+    inline static V _mapGetErrFunc(K2V)(V defaultValue) \
+    {                                                   \
+        QUIT(ERR_MAP, __FILE__, __LINE__);              \
+        return defaultValue;                            \
     }
 
-#define _DECLARE_MAP_PUT(K2V, K, V)                                      \
+#define _DECLARE_MAP_TYPE_PUT(K2V, K, V)                                 \
     inline static void _mapPutFunc(K2V)(_MapType(K2V) m, K key, V value) \
     {                                                                    \
-        int hash = (m->_hash_func)(key);                                 \
+        int hash = (m->_hashFunc)(key);                                  \
         int index = (unsigned)hash % m->_table->_size;                   \
-        _ListItemType(K2V) lst_item = list_at_q(m->_table, index);       \
+        _ListItemType(K2V) lstItem = listAtQ(m->_table, index);          \
                                                                          \
-        if (lst_item->_size == 0)                                        \
+        if (lstItem->_size == 0)                                         \
         {                                                                \
-            int n_active_bucket = ++(m->_n_active_bucket);               \
+            int nActiveBucket = ++(m->_nActiveBucket);                   \
                                                                          \
-            if (n_active_bucket > m->_table->_size / 2)                  \
+            if (nActiveBucket > m->_table->_size / 2)                    \
             {                                                            \
-                list_resize(m->_table, 3 * m->_table->_size / 2);        \
+                listResize(m->_table, 3 * m->_table->_size / 2);         \
             }                                                            \
         }                                                                \
                                                                          \
         int i = 0;                                                       \
-        for (i = 0; i < lst_item->_size; i++)                            \
+        for (i = 0; i < lstItem->_size; i++)                             \
         {                                                                \
-            if ((m->_equal_func)(key, list_at_q(lst_item, i).key))       \
+            if ((m->_equalFunc)(key, listAtQ(lstItem, i).key))           \
                 break;                                                   \
         }                                                                \
-        if (i < lst_item->_size)                                         \
+        if (i < lstItem->_size)                                          \
         {                                                                \
-            list_at_q(lst_item, i).value = value;                        \
+            listAtQ(lstItem, i).value = value;                           \
         }                                                                \
         else                                                             \
         {                                                                \
-            list_add(lst_item, ((_ItemType(K2V)){key, value}));          \
+            listAdd(lstItem, ((_ItemType(K2V)){key, value}));            \
             m->_size += 1;                                               \
         }                                                                \
     }
 
-#define _DECLARE_MAP_CONTAINS(K2V, K, V)                                \
+#define _DECLARE_MAP_TYPE_CONTAINS(K2V, K, V)                           \
     inline static bool _mapContainsKeyFunc(K2V)(_MapType(K2V) m, K key) \
     {                                                                   \
-        int hash = (m->_hash_func)(key);                                \
+        int hash = (m->_hashFunc)(key);                                 \
         int index = (unsigned)hash % m->_table->_size;                  \
-        _ListItemType(K2V) lst_item = list_at_q(m->_table, index);      \
-        for (int i = 0; i < lst_item->_size; i++)                       \
+        _ListItemType(K2V) lstItem = listAtQ(m->_table, index);         \
+        for (int i = 0; i < lstItem->_size; i++)                        \
         {                                                               \
-            if ((m->_equal_func)(key, list_at_q(lst_item, i).key))      \
+            if ((m->_equalFunc)(key, listAtQ(lstItem, i).key))          \
             {                                                           \
                 return TRUE;                                            \
             }                                                           \
@@ -123,38 +123,38 @@
         return FALSE;                                                   \
     }
 
-#define _DECLARE_MAP_REMOVE(K2V, K, V)                             \
+#define _DECLARE_MAP_TYPE_REMOVE(K2V, K, V)                        \
     inline static void _mapRemoveFunc(K2V)(_MapType(K2V) m, K key) \
     {                                                              \
-        int hash = (m->_hash_func)(key);                           \
+        int hash = (m->_hashFunc)(key);                            \
         int index = (unsigned)hash % m->_table->_size;             \
-        _ListItemType(K2V) lst_item = list_at_q(m->_table, index); \
-        for (int i = 0; i < lst_item->_size; i++)                  \
+        _ListItemType(K2V) lstItem = listAtQ(m->_table, index);    \
+        for (int i = 0; i < lstItem->_size; i++)                   \
         {                                                          \
-            if ((m->_equal_func)(key, list_at_q(lst_item, i).key)) \
+            if ((m->_equalFunc)(key, listAtQ(lstItem, i).key))     \
             {                                                      \
-                list_remove_at(lst_item, i);                       \
+                listRemoveAt(lstItem, i);                          \
                 return;                                            \
             }                                                      \
         }                                                          \
     }
 
-#define _DECLARE_MAP_ITEMS(K2V, K, V)                                    \
+#define _DECLARE_MAP_TYPE_ITEMS(K2V, K, V)                               \
     inline static _ListItemType(K2V) _mapItemsFunc(K2V)(_MapType(K2V) m) \
     {                                                                    \
         _ListItemType(K2V) items = _newListItemFunc(K2V)(m->scope, 0);   \
         for (int index = 0; index < m->_table->_size; index++)           \
         {                                                                \
-            _ListItemType(K2V) lst_item = list_at_q(m->_table, index);   \
-            for (int i = 0; i < lst_item->_size; i++)                    \
+            _ListItemType(K2V) lstItem = listAtQ(m->_table, index);      \
+            for (int i = 0; i < lstItem->_size; i++)                     \
             {                                                            \
-                list_add(items, list_at_q(lst_item, i));                 \
+                listAdd(items, listAtQ(lstItem, i));                     \
             }                                                            \
         }                                                                \
         return items;                                                    \
     }
 
-#define _DECLARE_MAP_ITEMS_ERR(K2V, K, V)                                   \
+#define _DECLARE_MAP_TYPE_ITEMS_ERR(K2V, K, V)                              \
     inline static _ListItemType(K2V) _mapItemsErrFunc(K2V)(_MapType(K2V) m) \
     {                                                                       \
         QUIT(ERR_MAP, __FILE__, __LINE__);                                  \
@@ -162,98 +162,98 @@
         return items;                                                       \
     }
 
-#define _DECLARE_MAP_PRINT(K2V, K, V)                                                                                        \
-    inline static void _printMapFunc(K2V)(_MapType(K2V) m, void (*print_key_func)(K key), void (*print_value_func)(V value)) \
-    {                                                                                                                        \
-        _ListItemType(K2V) items = _mapItemsFunc(K2V)(m);                                                                    \
-        printf("{");                                                                                                         \
-        for (int i = 0; i < items->_size; i++)                                                                               \
-        {                                                                                                                    \
-            print_key_func(list_at_q(items, i).key);                                                                         \
-            printf(" : ");                                                                                                   \
-            print_value_func(list_at_q(items, i).value);                                                                     \
-            if (i < items->_size - 1)                                                                                        \
-                printf(" , ");                                                                                               \
-        }                                                                                                                    \
-        printf("}\n");                                                                                                       \
+#define _DECLARE_MAP_TYPE_PRINT(K2V, K, V)                                                                               \
+    inline static void _printMapFunc(K2V)(_MapType(K2V) m, void (*printKeyFunc)(K key), void (*printValueFunc)(V value)) \
+    {                                                                                                                    \
+        _ListItemType(K2V) items = _mapItemsFunc(K2V)(m);                                                                \
+        printf("{");                                                                                                     \
+        for (int i = 0; i < items->_size; i++)                                                                           \
+        {                                                                                                                \
+            printKeyFunc(listAtQ(items, i).key);                                                                         \
+            printf(" : ");                                                                                               \
+            printValueFunc(listAtQ(items, i).value);                                                                     \
+            if (i < items->_size - 1)                                                                                    \
+                printf(" , ");                                                                                           \
+        }                                                                                                                \
+        printf("}\n");                                                                                                   \
     }
 
-#define _DECLARE_MAP_NEW(K2V, K, V, hash_func, equal_func)                                     \
+#define _DECLARE_MAP_TYPE_NEW(K2V, K, V, hashFunc, equalFunc)                                  \
     inline static _MapType(K2V) _newMapFunc(K2V)(Scope scope)                                  \
     {                                                                                          \
-        _MapType(K2V) m = zero_alloc(scope, sizeof(struct _MapTypeData(K2V)));                 \
+        _MapType(K2V) m = zeroAlloc(scope, sizeof(struct _MapTypeData(K2V)));                  \
         m->_table = (_ListListItemType(K2V))_newListListItemFunc(K2V)(scope, MAP_BUCKET_SIZE); \
         m->_size = 0;                                                                          \
-        m->_n_active_bucket = 0;                                                               \
-        m->_hash_func = hash_func;                                                             \
-        m->_equal_func = equal_func;                                                           \
+        m->_nActiveBucket = 0;                                                                 \
+        m->_hashFunc = hashFunc;                                                               \
+        m->_equalFunc = equalFunc;                                                             \
         m->_get = _mapGetFunc(K2V);                                                            \
-        m->_get_err = _mapGetErrFunc(K2V);                                                     \
+        m->_getErr = _mapGetErrFunc(K2V);                                                      \
         m->_put = _mapPutFunc(K2V);                                                            \
-        m->_contains_key = _mapContainsKeyFunc(K2V);                                           \
+        m->_containsKey = _mapContainsKeyFunc(K2V);                                            \
         m->_remove = _mapRemoveFunc(K2V);                                                      \
         m->_items = _mapItemsFunc(K2V);                                                        \
-        m->_items_err = _mapItemsErrFunc(K2V);                                                 \
+        m->_itemsErr = _mapItemsErrFunc(K2V);                                                  \
         m->_print = _printMapFunc(K2V);                                                        \
         m->scope = scope;                                                                      \
                                                                                                \
         for (int i = 0; i < MAP_BUCKET_SIZE; i++)                                              \
         {                                                                                      \
-            list_at_q(m->_table, i) = (_ListItemType(K2V))_newListItemFunc(K2V)(scope, 0);     \
+            listAtQ(m->_table, i) = (_ListItemType(K2V))_newListItemFunc(K2V)(scope, 0);       \
         }                                                                                      \
         return m;                                                                              \
     }
 
-#define DECLARE_MAP(K2V, K, V, hash_func, equal_func) \
-    _DECLARE_MAP_TYPE(K2V, K, V)                      \
-    _DECLARE_MAP_GET(K2V, K, V)                       \
-    _DECLARE_MAP_GET_ERR(K2V, K, V)                   \
-    _DECLARE_MAP_PUT(K2V, K, V)                       \
-    _DECLARE_MAP_CONTAINS(K2V, K, V)                  \
-    _DECLARE_MAP_REMOVE(K2V, K, V)                    \
-    _DECLARE_MAP_ITEMS(K2V, K, V)                     \
-    _DECLARE_MAP_ITEMS_ERR(K2V, K, V)                 \
-    _DECLARE_MAP_PRINT(K2V, K, V)                     \
-    _DECLARE_MAP_NEW(K2V, K, V, hash_func, equal_func)
+#define DECLARE_MAP_TYPE(K2V, K, V, hashFunc, equalFunc) \
+    _DECLARE_MAP_TYPE(K2V, K, V)                         \
+    _DECLARE_MAP_TYPE_GET(K2V, K, V)                     \
+    _DECLARE_MAP_TYPE_GET_ERR(K2V, K, V)                 \
+    _DECLARE_MAP_TYPE_PUT(K2V, K, V)                     \
+    _DECLARE_MAP_TYPE_CONTAINS(K2V, K, V)                \
+    _DECLARE_MAP_TYPE_REMOVE(K2V, K, V)                  \
+    _DECLARE_MAP_TYPE_ITEMS(K2V, K, V)                   \
+    _DECLARE_MAP_TYPE_ITEMS_ERR(K2V, K, V)               \
+    _DECLARE_MAP_TYPE_PRINT(K2V, K, V)                   \
+    _DECLARE_MAP_TYPE_NEW(K2V, K, V, hashFunc, equalFunc)
 
-#define _is_valid_map(m) ((m) != NULL && (m)->scope != NULL && (m)->scope->state == VALID)
+#define _isValidMap(m) ((m) != NULL && (m)->scope != NULL && (m)->scope->state == VALID)
 
-#define _check_map_valid(m)                \
-    if (!_is_valid_map(m))                 \
+#define _checkMapValid(m)                  \
+    if (!_isValidMap(m))                   \
     {                                      \
         QUIT(ERR_MAP, __FILE__, __LINE__); \
     }
 
-#define map_size(m) (_is_valid_map(m) ? (m)->_size : QUIT(ERR_MAP, __FILE__, __LINE__).value)
-#define map_is_empty(m) (map_size(m) == 0)
+#define mapSize(m) (_isValidMap(m) ? (m)->_size : QUIT(ERR_MAP, __FILE__, __LINE__).value)
+#define mapIsEmpty(m) (mapSize(m) == 0)
 
-#define map_get(m, key, default_value) (_is_valid_map(m) ? ((m)->_get)(m, key, default_value) : (m)->_get_err(default_value))
-#define map_contains_key(m, key) (_is_valid_map(m) ? ((m)->_contains_key)(m, key) : QUIT(ERR_MAP, __FILE__, __LINE__).value)
-#define map_items(m) (_is_valid_map(m) ? ((m)->_items)(m) : (m)->_items_err(m))
+#define mapGet(m, key, defaultValue) (_isValidMap(m) ? ((m)->_get)(m, key, defaultValue) : (m)->_getErr(defaultValue))
+#define mapContainsKey(m, key) (_isValidMap(m) ? ((m)->_containsKey)(m, key) : QUIT(ERR_MAP, __FILE__, __LINE__).value)
+#define mapItems(m) (_isValidMap(m) ? ((m)->_items)(m) : (m)->_itemsErr(m))
 
-#define map_put(m, key, value)      \
+#define mapPut(m, key, value)       \
     {                               \
-        _check_map_valid(m);        \
+        _checkMapValid(m);          \
         ((m)->_put)(m, key, value); \
     }
 
-#define map_remove(m, key)      \
+#define mapRemove(m, key)       \
     {                           \
-        _check_map_valid(m);    \
+        _checkMapValid(m);      \
         ((m)->_remove)(m, key); \
     }
 
-#define print_map(m, print_key_func, print_value_func)          \
-    {                                                           \
-        if (_is_valid_map(m))                                   \
-        {                                                       \
-            ((m)->_print)(m, print_key_func, print_value_func); \
-        }                                                       \
+#define printMap(m, printKeyFunc, printValueFunc)           \
+    {                                                       \
+        if (_isValidMap(m))                                 \
+        {                                                   \
+            ((m)->_print)(m, printKeyFunc, printValueFunc); \
+        }                                                   \
     }
 
-static inline int hash_int(int x) { return x; }
-static inline bool int_equal(int x1, int x2) { return x1 == x2; }
+static inline int hashInt(int x) { return x; }
+static inline bool intEqual(int x1, int x2) { return x1 == x2; }
 
-DECLARE_MAP(Int2Int, int, int, hash_int, int_equal);
+DECLARE_MAP_TYPE(Int2Int, int, int, hashInt, intEqual);
 
 #endif

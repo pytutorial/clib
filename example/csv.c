@@ -5,7 +5,7 @@
 
 #define MAX_LINE_LENGTH 102400
 
-ListListDouble read_csv(Scope scope, const char* fn, const char* delimiter, int skip_header)
+ListListDouble readCsv(Scope scope, const char* fn, const char* delimiter, int skipHeader)
 {
     ListListDouble table = newListListDouble(scope, 0);
 
@@ -22,14 +22,14 @@ ListListDouble read_csv(Scope scope, const char* fn, const char* delimiter, int 
     {
         Scope scope2 = newScope();
 
-        char *line = zero_alloc(scope2, MAX_LINE_LENGTH + 1);
+        char *line = zeroAlloc(scope2, MAX_LINE_LENGTH + 1);
         fgets(line, MAX_LINE_LENGTH, f);
 
-        if (i > 0 || !skip_header)
+        if (i > 0 || !skipHeader)
         {
             String st = newString(scope2, line);
-            ListString lst = split_string(st, delimiter);
-            int n_items = list_size(lst);
+            ListString lst = splitString(st, delimiter);
+            int n_items = listSize(lst);
 
             if (n_items > 0)
             {
@@ -37,16 +37,16 @@ ListListDouble read_csv(Scope scope, const char* fn, const char* delimiter, int 
 
                 for (int i = 0; i < n_items; i++)
                 {
-                    list_at_q(row, i) = atof(str_data(list_at_q(lst, i)));
+                    listAtQ(row, i) = atof(stringDataPtr(listAtQ(lst, i)));
                 }
 
-                list_add(table, row);
+                listAdd(table, row);
             }
         }
 
         i += 1;
 
-        free_scope(scope2);
+        freeScope(scope2);
     }
 
     fclose(f);

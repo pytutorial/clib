@@ -1,27 +1,27 @@
 #include "map.h"
 #include "string_util.h"
 
-DECLARE_MAP(Int2String, int, String, hash_int, int_equal);
-DECLARE_MAP(String2Int, String, int, hash_string, string_equal);
+DECLARE_MAP_TYPE(Int2String, int, String, hashInt, intEqual);
+DECLARE_MAP_TYPE(String2Int, String, int, hashString, stringEqual);
 
-void print_int(int i)
+void printInt(int i)
 {
     printf("%d", i);
 }
 
-void print_string(String st)
+void printString(String st)
 {
-    printf("\"%s\"", str_data(st));
+    printf("\"%s\"", stringDataPtr(st));
 }
 
-void test_map(MapInt2Int m)
+void testMap(MapInt2Int m)
 {
-    printf("%d %d\n", map_get(m, 6, -1), map_get(m, 8, -1));
+    printf("%d %d\n", mapGet(m, 6, -1), mapGet(m, 8, -1));
 }
 
-void print_item_int2string(ItemInt2String item)
+void printItemInt2String(ItemInt2String item)
 {
-    printf("(%d, \"%s\")", item.key, str_data(item.value));
+    printf("(%d, \"%s\")", item.key, stringDataPtr(item.value));
 }
 
 int main()
@@ -31,38 +31,38 @@ int main()
     MapString2Int m2 = newMapString2Int(scope);
     MapInt2String m3 = newMapInt2String(scope);
         
-    map_put(m1, 2, 1);
-    map_put(m1, 4, 2);
-    map_put(m1, 4, 3);
-    map_put(m1, 6, 3);
-    map_put(m1, 8, 4);
-    map_put(m1, 10, 5);
+    mapPut(m1, 2, 1);
+    mapPut(m1, 4, 2);
+    mapPut(m1, 4, 3);
+    mapPut(m1, 6, 3);
+    mapPut(m1, 8, 4);
+    mapPut(m1, 10, 5);
 
-    map_remove(m1, 8);
+    mapRemove(m1, 8);
 
-    printf("%d %d\n", map_contains_key(m1, 2), map_contains_key(m1, 3));
+    printf("%d %d\n", mapContainsKey(m1, 2), mapContainsKey(m1, 3));
 
-    test_map(m1);    
+    testMap(m1);    
 
-    print_map(m1, print_int, print_int);
+    printMap(m1, printInt, printInt);
 
-    map_put(m2, newString(scope, "one"), 1);
-    map_put(m2, newString(scope, "two"), 2);
-    map_put(m2, newString(scope, "three"), 3);
-    print_map(m2, print_string, print_int);
+    mapPut(m2, newString(scope, "one"), 1);
+    mapPut(m2, newString(scope, "two"), 2);
+    mapPut(m2, newString(scope, "three"), 3);
+    printMap(m2, printString, printInt);
 
-    map_put(m3, 8, newString(scope, "eight"));
-    map_put(m3, 9, newString(scope, "night"));
-    map_put(m3, 10, newString(scope, "ten"));
-    print_map(m3, print_int, print_string);
+    mapPut(m3, 8, newString(scope, "eight"));
+    mapPut(m3, 9, newString(scope, "night"));
+    mapPut(m3, 10, newString(scope, "ten"));
+    printMap(m3, printInt, printString);
     
-    printf("%d %d\n", map_get(m1, 5, -1), map_get(m2, newString(scope, "two"), -1));
+    printf("%d %d\n", mapGet(m1, 5, -1), mapGet(m2, newString(scope, "two"), -1));
     
-    print_string(map_get(m3, 10, newString(scope, "")));
+    printString(mapGet(m3, 10, newString(scope, "")));
     printf("\n");
 
-    ListItemInt2String items3 = map_items(m3);
-    print_list(items3, print_item_int2string);
+    ListItemInt2String items3 = mapItems(m3);
+    printList(items3, printItemInt2String);
 
-    free_scope(scope);
+    freeScope(scope);
 }

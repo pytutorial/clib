@@ -4,8 +4,8 @@ end
 
 define p_vec
 	set $vec_head = *$arg0.p_head
-	set $list_size = *$arg0.p_size
-	p *$vec_head @ $list_size
+	set $listSize = *$arg0.p_size
+	p *$vec_head @ $listSize
 end
 
 define p_vec_at

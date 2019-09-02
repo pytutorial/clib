@@ -5,6 +5,6 @@
 
 DECLARE_LIST(ListListDouble, ListDouble);
 
-ListListDouble read_csv(Scope scope, const char* fn, const char* delimiter, int skip_header);
+ListListDouble readCsv(Scope scope, const char* fn, const char* delimiter, int skipHeader);
 
 #endif

@@ -2,7 +2,7 @@
 
 #include "list.h"
 
-void print_int(int x) { printf("%d", x); }
+void printInt(int x) { printf("%d", x); }
 
 int main()
 {
@@ -12,12 +12,12 @@ int main()
 
     ListInt b = a;
 
-    list_add(b, 1);
-    list_add(b, 2);
+    listAdd(b, 1);
+    listAdd(b, 2);
 
-    print_list(a, print_int);
+    printList(a, printInt);
 
-    free_scope(scope);
+    freeScope(scope);
 
     return 0;
 }

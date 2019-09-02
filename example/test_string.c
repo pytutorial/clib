@@ -4,9 +4,9 @@
 #include "list.h"
 #include "string_util.h"
 
-void print_string(String st)
+void printString(String st)
 {
-    puts(str_data(st));
+    puts(stringDataPtr(st));
 }
 
 int main()
@@ -15,18 +15,18 @@ int main()
 
     String st = newString(scope, "Hello ");
     String st2 = newStringFmt(scope, "%s %d", "world", 1);
-    String st3 = concat_string(st, st2);
+    String st3 = concatString(st, st2);
 
-    print_string(st);
-    print_string(st2);
-    print_string(st3);
+    printString(st);
+    printString(st2);
+    printString(st3);
 
     char *token = "Hello";
-    int pos = find_string(st3, token);
+    int pos = findString(st3, token);
     if (pos >= 0)
     {
-        String st4 = right_string(st3, pos + strlen(token));
-        print_string(st4);
+        String st4 = rightString(st3, pos + strlen(token));
+        printString(st4);
     }
     else
     {
@@ -34,12 +34,12 @@ int main()
     }
 
     String st5 = newString(scope, "a1,b2,c3,d4,,,,");
-    ListString items = split_string(st5, ",");
+    ListString items = splitString(st5, ",");
 
-    for (int i = 0; i < list_size(items); i++)
+    for (int i = 0; i < listSize(items); i++)
     {
-        print_string(list_at(items, i));
+        printString(listAt(items, i));
     }
 
-    free_scope(scope);
+    freeScope(scope);
 }

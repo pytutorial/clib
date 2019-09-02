@@ -15,9 +15,9 @@
 #include <execinfo.h>
 #endif
 
-ErrorResult QUIT(const char *message, const char *file_name, int line)
+ErrorResult QUIT(const char *message, const char *fileName, int line)
 {
-    fprintf(stderr, "Error in file %s line %d : %s\n", file_name, line, message);
+    fprintf(stderr, "Error in file %s line %d : %s\n", fileName, line, message);
 
 #ifdef __unix__
     void *array[100];
@@ -32,11 +32,11 @@ ErrorResult QUIT(const char *message, const char *file_name, int line)
     return res;
 }
 
-inline static void _check_valid_scope(Scope scope, const char *file_name, int line)
+inline static void _checkValidScope(Scope scope, const char *fileName, int line)
 {
     if (scope != NULL && scope->state != VALID)
     {
-        QUIT("Access invalid scope", file_name, line);
+        QUIT("Access invalid scope", fileName, line);
     }
 }
 
@@ -49,22 +49,22 @@ Scope newScope()
     return scope;
 }
 
-void *zero_alloc(Scope scope, int size)
+void *zeroAlloc(Scope scope, int size)
 {
-    _check_valid_scope(scope, __FILE__, __LINE__);
+    _checkValidScope(scope, __FILE__, __LINE__);
 
     void *ptr = malloc(size);
     memset(ptr, 0, size);
 
     if (scope)
-        add_ptr(scope, ptr);
+        addPtr(scope, ptr);
 
     return ptr;
 }
 
-void *mem_realloc(Scope scope, void *ptr, int size)
+void *memRealloc(Scope scope, void *ptr, int size)
 {
-    _check_valid_scope(scope, __FILE__, __LINE__);
+    _checkValidScope(scope, __FILE__, __LINE__);
 
     void *new_ptr = realloc(ptr, size);
 
@@ -83,9 +83,9 @@ void *mem_realloc(Scope scope, void *ptr, int size)
     return new_ptr;
 }
 
-void free_ptr(Scope scope, void *ptr)
+void freePtr(Scope scope, void *ptr)
 {
-    _check_valid_scope(scope, __FILE__, __LINE__);
+    _checkValidScope(scope, __FILE__, __LINE__);
 
     for (int i = 0; i < scope->_size; i++)
     {
@@ -106,54 +106,54 @@ void free_ptr(Scope scope, void *ptr)
     }
 }
 
-void *ensure_capacity(Scope scope, void *items, int item_sz, int cur_size, int cur_cap, int new_cap, int *out_new_cap)
+void *ensureCapacity(Scope scope, void *items, int itemSize, int curSize, int curCap, int newCap, int *outNewCap)
 {
-    if (cur_cap >= new_cap)
+    if (curCap >= newCap)
     {
-        *out_new_cap = cur_cap;
+        *outNewCap = curCap;
         return items;
     }
 
-    _check_valid_scope(scope, __FILE__, __LINE__);
+    _checkValidScope(scope, __FILE__, __LINE__);
 
-    int cap = cur_cap;
+    int cap = curCap;
 
-    while (cap < new_cap)
+    while (cap < newCap)
     {
         cap += cap / 2 + 8;
     }
 
-    items = mem_realloc(scope, items, cap * item_sz);
-    memset((char *)items + cur_size * item_sz, 0, item_sz * (cap - cur_size));
+    items = memRealloc(scope, items, cap * itemSize);
+    memset((char *)items + curSize * itemSize, 0, itemSize * (cap - curSize));
 
-    *out_new_cap = cap;
+    *outNewCap = cap;
     return items;
 }
 
-void _ensure_scope_cap(Scope scope, int cap)
+void _ensureScopeCap(Scope scope, int cap)
 {
-    _check_valid_scope(scope, __FILE__, __LINE__);
+    _checkValidScope(scope, __FILE__, __LINE__);
 
     if (scope->_capacity < cap)
     {
         int newCap = 0;
-        scope->_items = ensure_capacity(NULL, scope->_items, sizeof(void *), scope->_size, scope->_capacity, cap, &newCap);
+        scope->_items = ensureCapacity(NULL, scope->_items, sizeof(void *), scope->_size, scope->_capacity, cap, &newCap);
         scope->_capacity = newCap;
     }
 }
 
-void add_ptr(Scope scope, void *item)
+void addPtr(Scope scope, void *item)
 {
-    _check_valid_scope(scope, __FILE__, __LINE__);
+    _checkValidScope(scope, __FILE__, __LINE__);
 
-    _ensure_scope_cap(scope, 1 + scope->_size);
+    _ensureScopeCap(scope, 1 + scope->_size);
     (scope->_items)[scope->_size] = item;
     scope->_size += 1;
 }
 
-void free_scope(Scope scope)
+void freeScope(Scope scope)
 {
-    _check_valid_scope(scope, __FILE__, __LINE__);
+    _checkValidScope(scope, __FILE__, __LINE__);
 
     for (int i = 0; i < scope->_size; i++)
     {

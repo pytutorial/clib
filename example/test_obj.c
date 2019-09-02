@@ -42,13 +42,13 @@ int main()
     {
         LineObject line = new_line(scope, new_point(scope, 0, 0), new_point(scope, 10, 10));
 
-        Point *pt1 = raw_ptr(attr(line, start));
-        Point *pt2 = raw_ptr(attr(line, end));
+        Point *pt1 = objectRawPtr(attr(line, start));
+        Point *pt2 = objectRawPtr(attr(line, end));
 
         printf("Start point : %d, %d\n", pt1->x, pt1->y);
         printf("End point : %d, %d\n", pt2->x, pt2->y);
     }
 
-    free_scope(scope);
+    freeScope(scope);
     return 0;
 }
