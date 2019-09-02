@@ -2,18 +2,20 @@
 
 #include "list.h"
 
+void print_int(int x) { printf("%d", x); }
+
 int main()
 {
-    Scope *scope = new_scope();
+    Scope scope = newScope();
 
-    ListInt a = new_list_int(scope, 0);
+    ListInt a = newListInt(scope, 0);
 
     ListInt b = a;
 
-    push(b, 1);
-    push(b, 2);
+    list_add(b, 1);
+    list_add(b, 2);
 
-    print_list(a, "%d");
+    print_list(a, print_int);
 
     free_scope(scope);
 

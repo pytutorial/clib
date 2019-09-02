@@ -24,19 +24,17 @@ typedef struct
     OutputData output;
 } DataSet;
 
-struct _TreeNode;
-
-typedef Object(struct _TreeNode) TreeNodeObject;
-
-typedef struct _TreeNode
+typedef struct
 {
     bool is_leaf;
-    TreeNodeObject left_child;
-    TreeNodeObject right_child;
+    struct TreeNodeObjectData *left_child;
+    struct TreeNodeObjectData *right_child;
     int split_feature_id;
     double split_val;
     double weight;
 } TreeNode;
+
+DECLARE_OBJECT(TreeNodeObject, TreeNode);
 
 typedef struct
 {
@@ -54,14 +52,22 @@ typedef struct
         a = tmp;           \
     }
 
+double list_sum(ListDouble lst)
+{
+    double sum = 0;
+    int N = list_size(lst);
+    for(int i = 0; i < N; i++) sum += list_at_q(lst, i);
+    return sum;
+}
+
 void get_arg_sort_indexes(const ListDouble lst, ListInt indexes)
 {
-    assert(size_of_list(lst) == size_of_list(indexes));
+    assert(list_size(lst) == list_size(indexes));
 
-    int N = size_of_list(lst);
+    int N = list_size(lst);
 
-    Scope *scope = new_scope();
-    ListDouble lst_clone = new_list_double(scope, N);
+    Scope scope = newScope();
+    ListDouble lst_clone = newListDouble(scope, N);
     list_copy(lst_clone, 0, lst, 0, N);
 
     double *lst_ptr = list_data_ptr(lst_clone);
@@ -104,20 +110,16 @@ double _calc_split_gain(double G, double H, double G_l, double H_l, double G_r, 
 
 double _calc_leaf_weight(ListDouble grad, ListDouble hessian, double lambd)
 {
-    double grad_sum, hessian_sum;
-
-    get_list_sum(grad, &grad_sum);
-    get_list_sum(hessian, &hessian_sum);
-
+    double grad_sum = list_sum(grad), hessian_sum = list_sum(hessian);
     return grad_sum / (hessian_sum + lambd);
 }
 
 void build(TreeNodeObject nodeObj, int input_dim, ListListDouble instances, ListDouble grad, ListDouble hessian, double shrinkage_rate, int depth, Param param)
 {
 
-    int N = size_of_list(instances);
+    int N = list_size(instances);
 
-    assert(size_of_list(grad) == N && size_of_list(hessian) == N);
+    assert(list_size(grad) == N && list_size(hessian) == N);
 
     TreeNode *node = raw_ptr(nodeObj);
 
@@ -128,22 +130,20 @@ void build(TreeNodeObject nodeObj, int input_dim, ListListDouble instances, List
         return;
     }
 
-    Scope *scope = new_scope();
+    Scope scope = newScope();
 
-    double G;
-    get_list_sum(grad, &G);
-    double H;
-    get_list_sum(hessian, &H);
+    double G = list_sum(grad);
+    double H = list_sum(hessian);
 
     double best_gain = 0.0;
     int best_feature_id = -1;
     double best_val = 0.0;
     int n_left = 0;
 
-    ListDouble instance_features = new_list_double(scope, N);
-    ListInt sorted_instance_ids = new_list_int(scope, N);
-    ListInt best_left_instance_ids = new_list_int(scope, 0);
-    ListInt best_right_instance_ids = new_list_int(scope, 0);
+    ListDouble instance_features = newListDouble(scope, N);
+    ListInt sorted_instance_ids = newListInt(scope, N);
+    ListInt best_left_instance_ids = newListInt(scope, 0);
+    ListInt best_right_instance_ids = newListInt(scope, 0);
 
     for (int feature_id = 0; feature_id < input_dim; feature_id++)
     {
@@ -151,18 +151,18 @@ void build(TreeNodeObject nodeObj, int input_dim, ListListDouble instances, List
 
         for (int i = 0; i < N; i++)
         {
-            ListDouble row = at_q(instances, i);
-            at_q(instance_features, i) = at(row, feature_id);
+            ListDouble row = list_at_q(instances, i);
+            list_at_q(instance_features, i) = list_at(row, feature_id);
         }
 
         get_arg_sort_indexes(instance_features, sorted_instance_ids);
 
         for (int i = 0; i < N; i++)
         {
-            int id = at_q(sorted_instance_ids, i);
-            ListDouble row = at(instances, id);
-            G_l += at(grad, id);
-            H_l += at(hessian, id);
+            int id = list_at_q(sorted_instance_ids, i);
+            ListDouble row = list_at(instances, id);
+            G_l += list_at(grad, id);
+            H_l += list_at(hessian, id);
 
             double G_r = G - G_l, H_r = H - H_l;
             double current_gain = _calc_split_gain(G, H, G_l, H_l, G_r, H_r, param.lamda);
@@ -171,12 +171,12 @@ void build(TreeNodeObject nodeObj, int input_dim, ListListDouble instances, List
             {
                 best_gain = current_gain;
                 best_feature_id = feature_id;
-                best_val = at(row, feature_id);
+                best_val = list_at(row, feature_id);
 
                 n_left = i + 1;
 
-                resize_list(best_left_instance_ids, n_left);
-                resize_list(best_right_instance_ids, N - n_left);
+                list_resize(best_left_instance_ids, n_left);
+                list_resize(best_right_instance_ids, N - n_left);
 
                 list_copy(best_left_instance_ids, 0, sorted_instance_ids, 0, n_left);
                 list_copy(best_right_instance_ids, 0, sorted_instance_ids, n_left, N);
@@ -194,35 +194,35 @@ void build(TreeNodeObject nodeObj, int input_dim, ListListDouble instances, List
         node->split_feature_id = best_feature_id;
         node->split_val = best_val;
 
-        TreeNodeObject left_child = new_object(TreeNode, scope);
-        TreeNodeObject right_child = new_object(TreeNode, scope);
+        TreeNodeObject left_child = newTreeNodeObject(scope);
+        TreeNodeObject right_child = newTreeNodeObject(scope);
 
-        ListListDouble best_left_instances = new_list_list_double(scope, n_left);
-        ListDouble best_left_grad = new_list_double(scope, n_left);
-        ListDouble best_left_hessian = new_list_double(scope, n_left);
+        ListListDouble best_left_instances = newListListDouble(scope, n_left);
+        ListDouble best_left_grad = newListDouble(scope, n_left);
+        ListDouble best_left_hessian = newListDouble(scope, n_left);
 
         for (int i = 0; i < n_left; i++)
         {
-            int id = at_q(best_left_instance_ids, i);
-            at_q(best_left_instances, i) = at(instances, id);
-            at_q(best_left_grad, i) = at(grad, id);
-            at_q(best_left_hessian, i) = at(hessian, id);
+            int id = list_at_q(best_left_instance_ids, i);
+            list_at_q(best_left_instances, i) = list_at(instances, id);
+            list_at_q(best_left_grad, i) = list_at(grad, id);
+            list_at_q(best_left_hessian, i) = list_at(hessian, id);
         }
 
         build(left_child, input_dim, best_left_instances, best_left_grad, best_left_hessian, shrinkage_rate, depth + 1, param);
 
         int n_right = N - n_left;
 
-        ListListDouble best_right_instances = new_list_list_double(scope, n_right);
-        ListDouble best_right_grad = new_list_double(scope, n_right);
-        ListDouble best_right_hessian = new_list_double(scope, n_right);
+        ListListDouble best_right_instances = newListListDouble(scope, n_right);
+        ListDouble best_right_grad = newListDouble(scope, n_right);
+        ListDouble best_right_hessian = newListDouble(scope, n_right);
 
         for (int i = 0; i < n_right; i++)
         {
-            int id = at_q(best_right_instance_ids, i);
-            at_q(best_right_instances, i) = at(instances, id);
-            at_q(best_right_grad, i) = at(grad, id);
-            at_q(best_right_hessian, i) = at(hessian, id);
+            int id = list_at_q(best_right_instance_ids, i);
+            list_at_q(best_right_instances, i) = list_at(instances, id);
+            list_at_q(best_right_grad, i) = list_at(grad, id);
+            list_at_q(best_right_hessian, i) = list_at(hessian, id);
         }
 
         build(right_child, input_dim, best_right_instances, best_right_grad, best_right_hessian, shrinkage_rate, depth + 1, param);
@@ -234,37 +234,37 @@ void build(TreeNodeObject nodeObj, int input_dim, ListListDouble instances, List
     free_scope(scope);
 }
 
-DataSet read_data(Scope *scope)
+DataSet read_data(Scope scope)
 {
-    Scope* scope2 = new_scope();
+    Scope scope2 = newScope();
     ListListDouble table = read_csv(scope2, "admit.csv", ",", 1);
 
     DataSet data_set;
     memset(&data_set, 0, sizeof(DataSet));
 
-    if (size_of_list(table) > 0 && size_of_list(at(table, 0)) >= 2)
+    if (list_size(table) > 0 && list_size(list_at(table, 0)) >= 2)
     {
-        int N = size_of_list(table);
-        ListListDouble X = new_list_list_double(scope, N);
-        ListDouble Y = new_list_double(scope, N);
+        int N = list_size(table);
+        ListListDouble X = newListListDouble(scope, N);
+        ListDouble Y = newListDouble(scope, N);
 
-        InputData input = {size_of_list(at(table, 0)) - 1, X};
+        InputData input = {list_size(list_at(table, 0)) - 1, X};
         OutputData output = Y;
 
         for (int i = 0; i < N; i++)
         {
-            ListDouble row = at(table, i);
-            int M = size_of_list(row);
+            ListDouble row = list_at(table, i);
+            int M = list_size(row);
 
             if (M >= 2)
             {
-                at(Y, i) = at(row, 0);
-                ListDouble x = new_list_double(scope, M);
+                list_at(Y, i) = list_at(row, 0);
+                ListDouble x = newListDouble(scope, M);
                 for (int j = 1; j < M; j++)
                 {
-                    at(x, j - 1) = at(row, j);
+                    list_at(x, j - 1) = list_at(row, j);
                 }
-                at(input.data, i) = x;
+                list_at(input.data, i) = x;
             }
         }
 
@@ -276,22 +276,24 @@ DataSet read_data(Scope *scope)
     return data_set;
 }
 
+void print_double(double x) {printf("%0.2f", x);}
+
 void print_input_item(ListDouble item)
 {
-    print_list(item, "%0.2f");
+    print_list(item, print_double);
 }
 
 int main()
 {
-    Scope *scope = new_scope();
+    Scope scope = newScope();
 
     DataSet data_set = read_data(scope);
 
     printf("Input = ");
-    print_list_obj(data_set.input.data, print_input_item);
+    print_list(data_set.input.data, print_input_item);
 
     printf("\nOutput = ");
-    print_list(data_set.output, "%0.0f");
+    print_list(data_set.output, print_double);
 
     printf("\n");
 

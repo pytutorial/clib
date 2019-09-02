@@ -5,25 +5,24 @@
 #include "object.h"
 #include "list.h"
 
-typedef struct
+typedef struct _StringData
 {
     char *_data;
     int _len;
-    int _state;
-    Scope *scope;
-} String;
+    Scope scope;
+}* String;
 
-DECLARE_LIST_TYPE(ListString, String, new_list_string);
+DECLARE_LIST(ListString, String);
 
 int str_len(String st);
 
 char *str_data(String st);
 
-String new_nstring(Scope *scope, const char *src, int len);
+String newNString(Scope scope, const char *src, int len);
 
-String new_string(Scope *scope, const char *src);
+String newString(Scope scope, const char *src);
 
-String new_string_fmt(Scope *scope, const char *fmt, ...);
+String newStringFmt(Scope scope, const char *fmt, ...);
 
 String concat_string(String st1, String st2);
 

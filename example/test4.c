@@ -4,25 +4,27 @@
 #include "list.h"
 #include "string_util.h"
 
-typedef Object(int) Integer;
+DECLARE_OBJECT(Integer, int);
+
+void print_int(int x) { printf("%d", x); }
 
 int main()
 {
-    Scope *scope = new_scope();
+    Scope scope = newScope();
 
-    Integer p = new_object(int, scope);
+    Integer p = newInteger(scope);
     *raw_ptr(p) = 100;
 
-    ListInt lst = new_list_int(scope, 10);
+    ListInt lst = newListInt(scope, 10);
 
-    for (int i = 0; i < size_of_list(lst); i++)
+    for (int i = 0; i < list_size(lst); i++)
     {
-        at(lst, i) = i;
+        list_at(lst, i) = i;
     }
 
-    int x = pop(lst);
+    printf("%d\n", list_pop(lst));
 
-    print_list(lst, "%d");
+    print_list(lst, print_int);
 
     printf("%d\n", *raw_ptr(p));
 

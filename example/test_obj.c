@@ -8,11 +8,11 @@ typedef struct
     int y;
 } Point;
 
-typedef Object(Point) PointObject;
+DECLARE_OBJECT(PointObject, Point);
 
-PointObject new_point(Scope *scope, int x, int y)
+PointObject new_point(Scope scope, int x, int y)
 {
-    PointObject point = new_object(Point, scope);
+    PointObject point = newPointObject(scope);
     attr(point, x) = x;
     attr(point, y) = y;
     return point;
@@ -22,14 +22,14 @@ typedef struct
 {
     PointObject start;
     PointObject end;
-    Scope *scope;
+    Scope scope;
 } Line;
 
-typedef Object(Line) LineObject;
+DECLARE_OBJECT(LineObject, Line);
 
-LineObject new_line(Scope *scope, PointObject start, PointObject end)
+LineObject new_line(Scope scope, PointObject start, PointObject end)
 {
-    LineObject line = new_object(Line, scope);
+    LineObject line = newLineObject(scope);
     attr(line, start) = start;
     attr(line, end) = end;
     return line;
@@ -37,10 +37,10 @@ LineObject new_line(Scope *scope, PointObject start, PointObject end)
 
 int main()
 {
-    Scope *scope = new_scope();
+    Scope scope = newScope();
 
     {
-        LineObject line; // = new_line(scope, new_point(scope, 0, 0), new_point(scope, 10, 10));
+        LineObject line = new_line(scope, new_point(scope, 0, 0), new_point(scope, 10, 10));
 
         Point *pt1 = raw_ptr(attr(line, start));
         Point *pt2 = raw_ptr(attr(line, end));

@@ -6,225 +6,272 @@
 
 #define ALWAYS_BOUND_CHECK 0
 
-#define ERR_AT                  "Invalid list or list index out of range"
-#define ERR_REMOVE_AT           "Remove item from list : invalid list ,or readonly list, or index out of range"
-#define ERR_POP                 "Pop invalid or empty list"
-#define ERR_LIST_SIZE           "Get size of invalid list"
-#define ERR_LIST_IS_EMPTY       "Check emptiness of and invalid list"
-#define ERR_RESIZE              "Resize invalid or readonly list"
-#define ERR_LIST_DATA_PTR       "Get data pointer of an invalid list"
-#define ERR_PUSH                "Push to invalid or readonly list"
-#define ERR_SOURCE_INDEX        "Source index out of range"
-#define ERR_DEST_INDEX          "Destination index out of range"
-#define ERR_SRC_DST_TYPE        "Source and destination list having different types"
-#define ERR_LIST_VIEW           "Invalid list or get view of list out of range"
+#define ERR_INVALID_LIST "Access an invalid list"
+#define ERR_LIST_AT "Get element of an invalid list or index out of range"
+#define ERR_POP_LIST "Pop an empty or invalid list"
+#define ERR_LIST_INDEX_OUT_OF_RANGE "List index out of range"
+#define ERR_MODIFY_READONLY_LIST "Modify a readonly list"
+#define ERR_INVALID_LIST_SLICE "Get slice of invalid list or index out of range"
+#define ERR_SOURCE_INDEX "Source index out of range"
+#define ERR_DEST_INDEX "Destination index out of range"
+#define ERR_SRC_DST_TYPE "Source and destination list having different types"
 
-#define List(type)                                                                                                                  \
-    struct                                                                                                                          \
-    {                                                                                                                               \
-        type **_p_items;                                                                                                            \
-        int *_p_size;                                                                                                               \
-        int *_p_capacity;                                                                                                           \
-        int _state;                                                                                                                 \
-        int _readonly;                                                                                                              \
-        Scope *scope;                                                                                                               \
+#define _ListTypeData(ListType) _##ListType##Data
+#define _ensureListCapFunc(ListType) _ensure##ListType##Cap
+#define _listAddFunc(ListType) _##ListType##Add
+#define _listResizeFunc(ListType) _##ListType##Resize
+#define _listPopFunc(ListType) _##ListType##Pop
+#define _listRemoveAtFunc(ListType) _##ListType##RemoveAt
+#define _listClearFunc(ListType) _##ListType##Clear
+#define _listSliceFunc(ListType) _##ListType##Slice
+#define _printListFunc(ListType) _print##ListType
+#define _newListFunc(ListType) new##ListType
+
+#define _DECLARE_LIST_TYPE(ListType, T)                                                                       \
+    typedef struct _ListTypeData(ListType)                                                                    \
+    {                                                                                                         \
+        T *_items;                                                                                            \
+        int _size;                                                                                            \
+        int _capacity;                                                                                        \
+        int _readonly;                                                                                        \
+        void (*_add)(struct _ListTypeData(ListType) * lst, T item);                                           \
+        T (*_pop)                                                                                             \
+        (struct _ListTypeData(ListType) * lst);                                                               \
+        void (*_resize)(struct _ListTypeData(ListType) * lst, int size);                                      \
+        void (*_remove_at)(struct _ListTypeData(ListType) * lst, int index);                                  \
+        void (*_clear)(struct _ListTypeData(ListType) * lst);                                                 \
+        struct _ListTypeData(ListType) * (*_slice)(struct _ListTypeData(ListType) * lst, int start, int end); \
+        void (*_print)(struct _ListTypeData(ListType) * lst, void (*print_item_func)(T item));                \
+        Scope scope;                                                                                          \
+    }                                                                                                         \
+    *ListType;
+
+#define _DECLARE_LIST_ENSURE_CAP(ListType, T)                              \
+    inline static void _ensureListCapFunc(ListType)(ListType lst, int cap) \
+    {                                                                      \
+        if (lst->_capacity < cap)                                          \
+        {                                                                  \
+            int new_cap = 0;                                               \
+            lst->_items =                                                  \
+                ensure_capacity(lst->scope,                                \
+                                lst->_items,                               \
+                                sizeof(T),                                 \
+                                lst->_size,                                \
+                                lst->_capacity,                            \
+                                cap,                                       \
+                                &new_cap);                                 \
+                                                                           \
+            lst->_capacity = new_cap;                                      \
+        }                                                                  \
     }
 
-#define _list_size(lst) (*(lst)._p_size)
-
-#define _list_items(lst) (*(lst)._p_items)
-
-#define _list_cap(lst) (*(lst)._p_capacity)
-
-#define null_list      { NULL, NULL, NULL, INVALID, 0, NULL }
-
-#define _new_list(type, scope, size)                                                                                                \
-    {                                                                                                                               \
-        p_data_alloc(scope, size * sizeof(type)),                                                                                   \
-            p_int_alloc(scope, size),                                                                                               \
-            p_int_alloc(scope, size),                                                                                               \
-            VALID, 0, scope                                                                                                         \
+#define _DECLARE_LIST_ADD(ListType, T)                              \
+    inline static void _listAddFunc(ListType)(ListType lst, T item) \
+    {                                                               \
+        _ensureListCapFunc(ListType)(lst, 1 + lst->_size);          \
+        lst->_items[lst->_size] = item;                             \
+        lst->_size += 1;                                            \
     }
 
-#define DECLARE_LIST_TYPE(ListType, T, new_list_func_name)                                                                          \
-    typedef List(T) ListType;                                                                                                       \
-                                                                                                                                    \
-    inline static ListType new_list_func_name(Scope *scope, int size)                                                               \
-    {                                                                                                                               \
-        return (ListType)_new_list(T, scope, size);                                                                                 \
+#define _DECLARE_LIST_RESIZE(ListType, T)                                \
+    inline static void _listResizeFunc(ListType)(ListType lst, int size) \
+    {                                                                    \
+        _ensureListCapFunc(ListType)(lst, size);                         \
+        lst->_size = size;                                               \
     }
 
-#define _ensure_list_cap(lst, cap)                                                                                                  \
-    {                                                                                                                               \
-        if (_list_cap(lst) < cap)                                                                                                   \
-        {                                                                                                                           \
-            int newCap = 0;                                                                                                         \
-                                                                                                                                    \
-            _list_items(lst) =                                                                                                      \
-                ensure_capacity((lst).scope,                                                                                        \
-                                _list_items(lst),                                                                                   \
-                                sizeof(*_list_items(lst)),                                                                          \
-                                _list_size(lst),                                                                                    \
-                                _list_cap(lst),                                                                                     \
-                                cap,                                                                                                \
-                                &newCap);                                                                                           \
-                                                                                                                                    \
-            _list_cap(lst) = newCap;                                                                                                \
-        }                                                                                                                           \
+#define _DECLARE_LIST_POP(ListType, T)                   \
+    inline static T _listPopFunc(ListType)(ListType lst) \
+    {                                                    \
+        return lst->_items[--lst->_size];                \
     }
 
-#define push(lst, item)                                                                                                             \
-    {                                                                                                                               \
-        if ((lst)._state != VALID || (lst).scope->state != VALID || (lst)._readonly)                                                \
-        {                                                                                                                           \
-            QUIT(ERR_PUSH, __FILE__, __LINE__);                                                                                     \
-        }                                                                                                                           \
-                                                                                                                                    \
-        _ensure_list_cap(lst, 1 + _list_size(lst));                                                                                 \
-        _list_items(lst)[_list_size(lst)++] = (item);                                                                               \
+#define _DECLARE_LIST_REMOVE_AT(ListType, T)                                \
+    inline static void _listRemoveAtFunc(ListType)(ListType lst, int index) \
+    {                                                                       \
+        for (int i = index; i < lst->_size - 1; i++)                        \
+        {                                                                   \
+            lst->_items[i] = lst->_items[i + 1];                            \
+        }                                                                   \
+        lst->_size -= 1;                                                    \
     }
 
-#define resize_list(lst, sz)                                                                                                        \
-    {                                                                                                                               \
-        if ((lst)._state != VALID || (lst).scope->state != VALID || (lst)._readonly)                                                \
-        {                                                                                                                           \
-            QUIT(ERR_RESIZE, __FILE__, __LINE__);                                                                                   \
-        }                                                                                                                           \
-                                                                                                                                    \
-        _ensure_list_cap(lst, sz);                                                                                                  \
-        _list_size(lst) = sz;                                                                                                       \
+#define _DECLARE_LIST_CLEAR(ListType, T)                      \
+    inline static void _listClearFunc(ListType)(ListType lst) \
+    {                                                         \
+        _listResizeFunc(ListType)(lst, 0);                    \
     }
 
-#define pop(lst) (                                                                                                                  \
-    *(                                                                                                                              \
-        (0 < _list_size(lst) && (lst).scope->state == VALID && !(lst)._readonly) ?                                                  \
-            (_list_items(lst) + (--_list_size(lst))) :                                                                              \
-             (typeof(_list_items(lst)))QUIT(ERR_POP, __FILE__, __LINE__).ptr)                                                       \
-    )
-
-#define at(lst, i) (                                                                                                                \
-    *(                                                                                                                              \
-        ((unsigned)(i) < (unsigned)_list_size(lst) && (lst).scope->state == VALID) ?                                                \
-            (_list_items(lst) + (i)) :                                                                                              \
-            (typeof(_list_items(lst)))QUIT(ERR_AT, __FILE__, __LINE__).ptr)                                                         \
-    )
-
-#define remove_list_element_at(lst, index)                                                                                          \
-    {                                                                                                                               \
-        if ((unsigned)(index) >= (unsigned)_list_size(lst)                                                                          \
-            || (lst)._state != VALID                                                                                                \
-            || (lst).scope->state != VALID                                                                                          \
-            || (lst)._readonly)                                                                                                     \
-        {                                                                                                                           \
-            QUIT(ERR_REMOVE_AT, __FILE__, __LINE__);                                                                                \
-        }                                                                                                                           \
-                                                                                                                                    \
-        for (int i = index; i < _list_size(lst) - 1; i++)                                                                           \
-        {                                                                                                                           \
-            _list_items(lst)[i] = _list_items(lst)[i + 1];                                                                          \
-        }                                                                                                                           \
-        _list_size(lst) -= 1;                                                                                                       \
+#define _DECLARE_LIST_SLICE(ListType, T)                                                 \
+    inline static ListType _listSliceFunc(ListType)(ListType lst, int start, int end)    \
+    {                                                                                    \
+        ListType slice = zero_alloc(lst->scope, sizeof(struct _ListTypeData(ListType))); \
+        slice->_items = lst->_items + start;                                             \
+        slice->_size = slice->_capacity = end - start;                                   \
+        slice->_readonly = TRUE;                                                         \
+        slice->_add = NULL;                                                              \
+        slice->_pop = NULL;                                                              \
+        slice->_resize = NULL;                                                           \
+        slice->_remove_at = NULL;                                                        \
+        slice->_clear = NULL;                                                            \
+        slice->_slice = lst->_slice;                                                     \
+        slice->_print = lst->_print;                                                     \
+        slice->scope = lst->scope;                                                       \
+        return slice;                                                                    \
     }
+
+#define _DECLARE_LIST_PRINT(ListType, T)                                                       \
+    inline static void _printListFunc(ListType)(ListType lst, void (*print_item_func)(T item)) \
+    {                                                                                          \
+        printf("[");                                                                           \
+                                                                                               \
+        for (int i = 0; i < lst->_size; i++)                                                   \
+        {                                                                                      \
+            print_item_func(lst->_items[i]);                                                   \
+            if (i < lst->_size - 1)                                                            \
+                printf(", ");                                                                  \
+        }                                                                                      \
+                                                                                               \
+        printf("]\n");                                                                         \
+    }
+
+#define _DECLARE_NEW_LIST(ListType, T)                                            \
+    inline static ListType _newListFunc(ListType)(Scope scope, int size)          \
+    {                                                                             \
+        ListType lst = zero_alloc(scope, sizeof(struct _ListTypeData(ListType))); \
+        lst->_items = zero_alloc(scope, size * sizeof(T));                        \
+        lst->_size = lst->_capacity = size;                                       \
+        lst->_readonly = FALSE;                                                   \
+        lst->_add = _listAddFunc(ListType);                                       \
+        lst->_pop = _listPopFunc(ListType);                                       \
+        lst->_resize = _listResizeFunc(ListType);                                 \
+        lst->_remove_at = _listRemoveAtFunc(ListType);                            \
+        lst->_clear = _listClearFunc(ListType);                                   \
+        lst->_slice = _listSliceFunc(ListType);                                   \
+        lst->_print = _printListFunc(ListType);                                   \
+        lst->scope = scope;                                                       \
+        return lst;                                                               \
+    }
+
+#define DECLARE_LIST(ListType, T)         \
+    _DECLARE_LIST_TYPE(ListType, T)       \
+    _DECLARE_LIST_ENSURE_CAP(ListType, T) \
+    _DECLARE_LIST_ADD(ListType, T)        \
+    _DECLARE_LIST_RESIZE(ListType, T)     \
+    _DECLARE_LIST_POP(ListType, T)        \
+    _DECLARE_LIST_REMOVE_AT(ListType, T)  \
+    _DECLARE_LIST_CLEAR(ListType, T)      \
+    _DECLARE_LIST_SLICE(ListType, T)      \
+    _DECLARE_LIST_PRINT(ListType, T)      \
+    _DECLARE_NEW_LIST(ListType, T)
+
+#define list_at(lst, i) ( \
+    *(                    \
+        ((unsigned)(i) < (unsigned)(lst)->_size && (lst)->scope->state == VALID) ? ((lst)->_items + (i)) : (typeof((lst)->_items))QUIT(ERR_LIST_AT, __FILE__, __LINE__).ptr))
 
 #if ALWAYS_BOUND_CHECK
-#define at_q(lst, i) at(lst, i)
+#define list_at_q(lst, i) list_at(lst, i)
 #else
-#define at_q(lst, i) _list_items(lst)[i]
+#define list_at_q(lst, i) ((lst)->_items[i])
 #endif
 
-#define clear_list(lst)     resize_list(lst, 0)
+#define _is_valid_list(lst) ((lst) != NULL && (lst)->scope != NULL && (lst)->scope->state == VALID)
+#define _is_modifiable_list(lst) ((lst) != NULL && !(lst)->_readonly)
 
-#define size_of_list(lst)   (((lst)._state == VALID && (lst).scope->state == VALID) ?                                               \
-                                _list_size(lst) : QUIT(ERR_LIST_SIZE, __FILE__, __LINE__).value)
-
-#define is_empty_list(lst)  (size_of_list(lst) == 0)
-
-#define is_null_list(lst)   ((lst)._p_items == NULL && (lst).scope == NULL)
-
-#define list_data_ptr(lst)  (((lst)._state == VALID && (lst).scope->state == VALID) ?                                               \
-                                (*(lst)._p_items) : (typeof(*(lst)._p_items)) QUIT(ERR_LIST_DATA_PTR, __FILE__, __LINE__).ptr)
-
-#define _check_range(lst, start, end) (start >= 0 && start <= end && end <= size_of_list(lst))
-
-#define list_view(lst, start, end)                                                                                                  \
-    ((typeof(lst))                                                                                                                  \
-    {                                                                                                                               \
-        _check_range(lst, start, end) ?                                                                                             \
-            (typeof((lst)._p_items))p_ref_alloc(scope, _list_items(lst) + start) :                                                  \
-            (typeof((lst)._p_items))QUIT(ERR_LIST_VIEW, __FILE__, __LINE__).ptr,                                                    \
-        p_int_alloc(scope, end - start),                                                                                            \
-        p_int_alloc(scope, end - start),                                                                                            \
-        VALID, 1, scope                                                                                                             \
-    })
-
-#define list_copy(dst, dst_start, src, src_start, src_end)                                                                          \
-    {                                                                                                                               \
-        int src_size = size_of_list(src);                                                                                           \
-        int dst_size = size_of_list(dst);                                                                                           \
-        if (src_start < 0 || src_end < src_start || src_end > src_size)                                                             \
-        {                                                                                                                           \
-            QUIT(ERR_SOURCE_INDEX, __FILE__, __LINE__);                                                                             \
-        }                                                                                                                           \
-                                                                                                                                    \
-        int len = src_end - src_start;                                                                                              \
-        if (dst_start < 0 || dst_start + len > dst_size)                                                                            \
-        {                                                                                                                           \
-            QUIT(ERR_DEST_INDEX, __FILE__, __LINE__);                                                                               \
-        }                                                                                                                           \
-                                                                                                                                    \
-        if (sizeof(*_list_items(src)) != sizeof(*_list_items(dst)))                                                                 \
-        {                                                                                                                           \
-            QUIT(ERR_SRC_DST_TYPE, __FILE__, __LINE__);                                                                             \
-        }                                                                                                                           \
-                                                                                                                                    \
-        memcpy(_list_items(dst) + dst_start,                                                                                        \
-               _list_items(src) + src_start, len * sizeof(_list_items(src)));                                                       \
+#define _check_list_valid(lst)                      \
+    if (!_is_valid_list(lst))                       \
+    {                                               \
+        QUIT(ERR_INVALID_LIST, __FILE__, __LINE__); \
     }
 
-#define get_list_sum(lst, p_sum_var)                                                                                                \
-    {                                                                                                                               \
-        *(p_sum_var) = 0;                                                                                                           \
-        for (int i = 0; i < size_of_list(lst); i++)                                                                                 \
-            *(p_sum_var) += _list_items(lst)[i];                                                                                    \
+#define _check_list_modifiable(lst)                         \
+    if (!_is_modifiable_list(lst))                          \
+    {                                                       \
+        QUIT(ERR_MODIFY_READONLY_LIST, __FILE__, __LINE__); \
     }
 
-#define print_list(lst, fmt)                                                                                                        \
-    if(!is_null_list(lst)){                                                                                                         \
-        typeof(lst) _lst = lst;                                                                                                     \
-        int len = size_of_list(_lst);                                                                                               \
-        printf("[");                                                                                                                \
-                                                                                                                                    \
-        for (int i = 0; i < len; i++)                                                                                               \
-        {                                                                                                                           \
-            printf(fmt, _list_items(_lst)[i]);                                                                                      \
-            if (i < len - 1)                                                                                                        \
-                printf(", ");                                                                                                       \
-        }                                                                                                                           \
-                                                                                                                                    \
-        printf("]\n");                                                                                                              \
+#define list_add(lst, item)          \
+    {                                \
+        _check_list_valid(lst);      \
+        _check_list_modifiable(lst); \
+        (lst)->_add(lst, item);      \
     }
 
-#define print_list_obj(lst, print_item)                                                                                             \
-    if(!is_null_list(lst)){                                                                                                         \
-        typeof(lst) _lst = lst;                                                                                                     \
-        int len = size_of_list(_lst);                                                                                               \
-        printf("[");                                                                                                                \
-                                                                                                                                    \
-        for (int i = 0; i < len; i++)                                                                                               \
-        {                                                                                                                           \
-            print_item(_list_items(_lst)[i]);                                                                                       \
-            if (i < len - 1)                                                                                                        \
-                printf(", ");                                                                                                       \
-        }                                                                                                                           \
-                                                                                                                                    \
-        printf("]\n");                                                                                                              \
+#define list_pop(lst) ( \
+    (_is_valid_list(lst) && _is_modifiable_list(lst)) ? (lst)->_pop(lst) : *((typeof((lst)->_items))QUIT(ERR_POP_LIST, __FILE__, __LINE__).ptr))
+
+#define list_remove_at(lst, index)                                 \
+    {                                                              \
+        _check_list_valid(lst);                                    \
+        _check_list_modifiable(lst);                               \
+                                                                   \
+        if ((unsigned)(index) >= (lst)->_size)                     \
+        {                                                          \
+            QUIT(ERR_LIST_INDEX_OUT_OF_RANGE, __FILE__, __LINE__); \
+        }                                                          \
+                                                                   \
+        (lst)->_remove_at(lst, index);                             \
     }
 
-DECLARE_LIST_TYPE(ListInt, int, new_list_int);
-DECLARE_LIST_TYPE(ListChar, char, new_list_char);
-DECLARE_LIST_TYPE(ListLong, long, new_list_long);
-DECLARE_LIST_TYPE(ListShort, short, new_list_short);
-DECLARE_LIST_TYPE(ListDouble, double, new_list_double);
-DECLARE_LIST_TYPE(ListFloat, float, new_list_float);
+#define list_resize(lst, size)       \
+    {                                \
+        _check_list_valid(lst);      \
+        _check_list_modifiable(lst); \
+        (lst)->_resize(lst, size);   \
+    }
+
+#define clear_list(lst)              \
+    {                                \
+        _check_list_valid(lst);      \
+        _check_list_modifiable(lst); \
+        (lst)->_clear(lst);          \
+    }
+
+#define list_size(lst) (_is_valid_list(lst) ? (lst)->_size : QUIT(ERR_INVALID_LIST, __FILE__, __LINE__).value)
+
+#define list_is_empty(lst) (_is_valid_list(lst) ? (lst)->_size == 0 : QUIT(ERR_INVALID_LIST, __FILE__, __LINE__).value)
+
+#define list_data_ptr(lst) (_is_valid_list(lst) ? (lst)->_items : (typeof(lst->_items))QUIT(ERR_INVALID_LIST, __FILE__, __LINE__).ptr)
+
+#define _check_range(lst, start, end) (start >= 0 && start <= end && end <= list_size(lst))
+
+#define list_slice(lst, start, end) ((_is_valid_list(lst) && _check_range(lst, start, end)) ? (lst)->_slice(lst, start, end) : (typeof(lst))QUIT(ERR_INVALID_LIST_SLICE, __FILE__, __LINE__).ptr)
+
+#define list_copy(dst, dst_start, src, src_start, src_end)               \
+    {                                                                    \
+        int src_size = list_size(src);                                   \
+        int dst_size = list_size(dst);                                   \
+        if (src_start < 0 || src_end < src_start || src_end > src_size)  \
+        {                                                                \
+            QUIT(ERR_SOURCE_INDEX, __FILE__, __LINE__);                  \
+        }                                                                \
+                                                                         \
+        int len = src_end - src_start;                                   \
+        if (dst_start < 0 || dst_start + len > dst_size)                 \
+        {                                                                \
+            QUIT(ERR_DEST_INDEX, __FILE__, __LINE__);                    \
+        }                                                                \
+                                                                         \
+        if (sizeof(src->_items[0]) != sizeof(dst->_items[0]))            \
+        {                                                                \
+            QUIT(ERR_SRC_DST_TYPE, __FILE__, __LINE__);                  \
+        }                                                                \
+                                                                         \
+        memcpy((dst)->_items + dst_start,                                \
+               (src)->_items + src_start, len * sizeof(src->_items[0])); \
+    }
+
+#define print_list(lst, print_item_func)     \
+    if (_is_valid_list(lst))                 \
+    {                                        \
+        (lst)->_print(lst, print_item_func); \
+    }
+
+DECLARE_LIST(ListInt, int);
+DECLARE_LIST(ListChar, char);
+DECLARE_LIST(ListLong, long);
+DECLARE_LIST(ListShort, short);
+DECLARE_LIST(ListDouble, double);
+DECLARE_LIST(ListFloat, float);
 
 #endif

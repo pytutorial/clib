@@ -32,7 +32,7 @@ ErrorResult QUIT(const char *message, const char *file_name, int line)
     return res;
 }
 
-inline static void _check_valid_scope(Scope *scope, const char *file_name, int line)
+inline static void _check_valid_scope(Scope scope, const char *file_name, int line)
 {
     if (scope != NULL && scope->state != VALID)
     {
@@ -40,14 +40,16 @@ inline static void _check_valid_scope(Scope *scope, const char *file_name, int l
     }
 }
 
-Scope *new_scope()
+Scope newScope()
 {
-    Scope *scope = malloc(sizeof(Scope));
-    *scope = (Scope){malloc(0), 0, 0, VALID};
+    Scope scope = malloc(sizeof(struct _ScopeData));
+    scope->_items = malloc(0);
+    scope->_capacity = scope->_size = 0;
+    scope->state = VALID;
     return scope;
 }
 
-void *zero_alloc(Scope *scope, int size)
+void *zero_alloc(Scope scope, int size)
 {
     _check_valid_scope(scope, __FILE__, __LINE__);
 
@@ -60,7 +62,7 @@ void *zero_alloc(Scope *scope, int size)
     return ptr;
 }
 
-void *mem_realloc(Scope *scope, void *ptr, int size)
+void *mem_realloc(Scope scope, void *ptr, int size)
 {
     _check_valid_scope(scope, __FILE__, __LINE__);
 
@@ -81,29 +83,7 @@ void *mem_realloc(Scope *scope, void *ptr, int size)
     return new_ptr;
 }
 
-int *p_int_alloc(Scope *scope, int value)
-{
-    int *p = zero_alloc(scope, sizeof(int));
-    *p = value;
-    return p;
-}
-
-void *p_ref_alloc(Scope *scope, void *ptr)
-{
-    void **p = zero_alloc(scope, sizeof(void *));
-    *p = ptr;
-    return p;
-}
-
-void *p_data_alloc(Scope *scope, int len)
-{
-    void **p = zero_alloc(scope, sizeof(void *));
-    void *data = zero_alloc(scope, len);
-    *p = data;
-    return p;
-}
-
-void free_ptr(Scope *scope, void *ptr)
+void free_ptr(Scope scope, void *ptr)
 {
     _check_valid_scope(scope, __FILE__, __LINE__);
 
@@ -126,7 +106,7 @@ void free_ptr(Scope *scope, void *ptr)
     }
 }
 
-void *ensure_capacity(Scope *scope, void *items, int item_sz, int cur_size, int cur_cap, int new_cap, int *out_new_cap)
+void *ensure_capacity(Scope scope, void *items, int item_sz, int cur_size, int cur_cap, int new_cap, int *out_new_cap)
 {
     if (cur_cap >= new_cap)
     {
@@ -150,7 +130,7 @@ void *ensure_capacity(Scope *scope, void *items, int item_sz, int cur_size, int 
     return items;
 }
 
-void _ensure_scope_cap(Scope *scope, int cap)
+void _ensure_scope_cap(Scope scope, int cap)
 {
     _check_valid_scope(scope, __FILE__, __LINE__);
 
@@ -162,7 +142,7 @@ void _ensure_scope_cap(Scope *scope, int cap)
     }
 }
 
-void add_ptr(Scope *scope, void *item)
+void add_ptr(Scope scope, void *item)
 {
     _check_valid_scope(scope, __FILE__, __LINE__);
 
@@ -171,7 +151,7 @@ void add_ptr(Scope *scope, void *item)
     scope->_size += 1;
 }
 
-void free_scope(Scope *scope)
+void free_scope(Scope scope)
 {
     _check_valid_scope(scope, __FILE__, __LINE__);
 

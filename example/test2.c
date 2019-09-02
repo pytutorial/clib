@@ -11,12 +11,14 @@ typedef struct
     double rank;
 } Item;
 
+void print_double(double x) { printf("%0.2f", x); }
+
 void print_item(Item item)
 {
     printf("{gre : %f, gpa : %f, rank : %f}", item.gre, item.gpa, item.rank);
 }
 
-DECLARE_LIST_TYPE(ListItem, Item, new_list_item);
+DECLARE_LIST(ListItem, Item);
 
 double randf()
 {
@@ -25,20 +27,20 @@ double randf()
 
 void read_data(ListItem X, ListDouble Y)
 {
-    Scope *scope = new_scope();
+    Scope scope = newScope();
 
-    ListListDouble data_set = new_list_list_double(scope, 0);
+    ListListDouble data_set = newListListDouble(scope, 0);
 
     data_set = read_csv(scope, "admit.csv", ",", 1);
 
-    for (int i = 0; i < size_of_list(data_set); i++)
+    for (int i = 0; i < list_size(data_set); i++)
     {
-        ListDouble row = at(data_set, i);
+        ListDouble row = list_at_q(data_set, i);
 
-        if (size_of_list(row) >= 4)
+        if (list_size(row) >= 4)
         {
-            push(Y, at(row, 0));
-            push(X, ((Item){at(row, 1), at(row, 2), at(row, 3)}));
+            list_add(Y, list_at(row, 0));
+            list_add(X, ((Item){list_at(row, 1), list_at(row, 2), list_at(row, 3)}));
         }
     }
     free_scope(scope);
@@ -46,22 +48,22 @@ void read_data(ListItem X, ListDouble Y)
 
 int main()
 {
-    Scope *scope = new_scope();
+    Scope scope = newScope();
 
-    ListItem X = new_list_item(scope, 0);
-    ListDouble Y = new_list_double(scope, 0);
+    ListItem X = newListItem(scope, 0);
+    ListDouble Y = newListDouble(scope, 0);
 
     read_data(X, Y);
 
-    int N = size_of_list(X);
+    int N = list_size(X);
 
     if (N > 0)
     {
-        ListItem Xhead = list_view(X, 0, 10);
-        ListDouble Yhead = list_view(Y, 0, 10);
+        ListItem Xhead = list_slice(X, 0, 10);
+        ListDouble Yhead = list_slice(Y, 0, 10);
         
-        printf("Xhead = "); print_list_obj(Xhead, print_item);
-        printf("Yhead = "); print_list(Yhead, "%f");
+        printf("Xhead = "); print_list(Xhead, print_item);
+        printf("Yhead = "); print_list(Yhead, print_double);
 
         int epochs = 100;
         double lr = 0.001;
@@ -75,10 +77,10 @@ int main()
 
             for (int i = 0; i < N; i++)
             {
-                Item x = at(X, i);
+                Item x = list_at_q(X, i);
                 double x1 = x.gre / greMax, x2 = x.gpa / gpaMax, x3 = x.rank / rankMax;
 
-                double y = at(Y, i);
+                double y = list_at(Y, i);
                 double p = 1.0 / (1.0 + exp(-(b + a1 * x1 + a2 * x2 + a3 * x3)));
                 double e = p - y;
                 da1 += e * p * (1 - p) * a1;

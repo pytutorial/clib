@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include "set.h"
+#include "string_util.h"
+
+DECLARE_SET(SetString, String, hash_string, string_equal);
+
 
 void print_string(String st)
 {
@@ -13,21 +17,24 @@ void print_int(int i)
 
 int main()
 {
-    Scope* scope = new_scope();
+    Scope scope = newScope();
     
-    SetInt s1 = new_set_int(scope);
-    add_to_set(s1, 1);
-    add_to_set(s1, 2);
-    add_to_set(s1, 1);
-    bool b; check_set_contain(s1, 2, &b);
-    printf("%s\n", b?"TRUE" : "FALSE");
+    SetInt s1 = newSetInt(scope);
+    set_add(s1, 1);
+    set_add(s1, 2);
+    set_add(s1, 1);
+    printf("%s\n", set_contains(s1, 2)?"TRUE" : "FALSE");
 
-    remove_set_item(s1, 2);
+    set_remove(s1, 2);
     print_set(s1, print_int);
 
-    SetString s2 = new_set_string(scope); 
-    add_to_set(s2, new_string(scope, "Hello"));
-    add_to_set(s2, new_string(scope, "This is a test"));
+    List_int li = set_items(s1);
+    print_list(li, print_int);
+
+    SetString s2 = newSetString(scope); 
+    set_add(s2, newString(scope, "Hello"));
+    set_add(s2, newString(scope, "This is a test"));
+    set_add(s2, newString(scope, "Hello"));
 
     print_set(s2, print_string);
 
