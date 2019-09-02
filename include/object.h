@@ -33,7 +33,7 @@ typedef struct _ScopeData
 #define DECLARE_OBJECT(Object, T)                                              \
     typedef struct _ObjectDataType(Object)                                     \
     {                                                                          \
-        T *_ptr;                                                               \
+        T _data;                                                               \
         Scope scope;                                                           \
     }                                                                          \
     *Object;                                                                   \
@@ -41,24 +41,15 @@ typedef struct _ScopeData
     inline static Object _newObjectFunc(Object)(Scope scope)                   \
     {                                                                          \
         Object obj = zeroAlloc(scope, sizeof(struct _ObjectDataType(Object))); \
-        obj->_ptr = zeroAlloc(scope, sizeof(T));                               \
-        obj->scope = scope;                                                    \
-        return obj;                                                            \
-    }                                                                          \
-                                                                               \
-    inline static Object _makeObjectFunc(Object)(Scope scope, T * ptr)         \
-    {                                                                          \
-        Object obj = zeroAlloc(scope, sizeof(struct _ObjectDataType(Object))); \
-        obj->_ptr = ptr;                                                       \
         obj->scope = scope;                                                    \
         return obj;                                                            \
     }
 
 #define _isValidObject(obj) ((obj) != NULL && (obj)->scope != NULL && (obj)->scope->state == VALID)
 
-#define objectRawPtr(obj) (_isValidObject(obj) ? (obj)->_ptr : (typeof((obj)->_ptr))QUIT(ERR_RAW_PTR, __FILE__, __LINE__).ptr)
+#define objectRawPtr(obj) (_isValidObject(obj) ? &((obj)->_data) : (typeof(&((obj)->_data))) QUIT(ERR_RAW_PTR, __FILE__, __LINE__).ptr)
 
-#define attr(obj, field) (_isValidObject(obj) ? (obj)->_ptr : (typeof((obj)->_ptr))QUIT(ERR_RAW_PTR, __FILE__, __LINE__).ptr)->field
+#define attr(obj, field) (_isValidObject(obj) ? &((obj)->_data) : (typeof(&((obj)->_data))) QUIT(ERR_RAW_PTR, __FILE__, __LINE__).ptr)->field
 
 ErrorResult QUIT(const char *message, const char *fileName, int line);
 
