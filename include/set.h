@@ -175,6 +175,7 @@
     _DECLARE_SET_NEW(SetType, T, hash_func, equal_func)
 
 #define _is_valid_set(s) ((s) != NULL && (s)->scope != NULL && (s)->scope->state == VALID)
+
 #define _check_set_valid(s)                \
     if (!_is_valid_set(s))                 \
     {                                      \
@@ -192,6 +193,7 @@
         _check_set_valid(s);  \
         ((s)->_add)(s, item); \
     }
+    
 #define set_remove(s, item)      \
     {                            \
         _check_set_valid(s);     \

@@ -38,10 +38,8 @@
         int _n_active_bucket;                                                                                           \
         int (*_hash_func)(K);                                                                                           \
         bool (*_equal_func)(K, K);                                                                                      \
-        V (*_get)                                                                                                       \
-        (struct _MapTypeData(K2V) * m, K key, V default_value);                                                         \
-        V (*_get_err)                                                                                                   \
-        (V default_value);                                                                                              \
+        V (*_get) (struct _MapTypeData(K2V) * m, K key, V default_value);                                                         \
+        V (*_get_err) (V default_value);                                                                                              \
         void (*_put)(struct _MapTypeData(K2V) * m, K key, V value);                                                     \
         bool (*_contains_key)(struct _MapTypeData(K2V) * m, K key);                                                     \
         void (*_remove)(struct _MapTypeData(K2V) * m, K key);                                                           \
@@ -219,6 +217,7 @@
     _DECLARE_MAP_NEW(K2V, K, V, hash_func, equal_func)
 
 #define _is_valid_map(m) ((m) != NULL && (m)->scope != NULL && (m)->scope->state == VALID)
+
 #define _check_map_valid(m)                \
     if (!_is_valid_map(m))                 \
     {                                      \
@@ -237,6 +236,7 @@
         _check_map_valid(m);        \
         ((m)->_put)(m, key, value); \
     }
+    
 #define map_remove(m, key)      \
     {                           \
         _check_map_valid(m);    \
