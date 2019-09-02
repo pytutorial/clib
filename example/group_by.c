@@ -28,7 +28,7 @@ MapInt2ListListInt groupBy(ListListInt table, int featureId)
     return m;
 }
 
-ListInt new_row(Scope scope, int* _row, int M)
+ListInt newRow(Scope scope, int* _row, int M)
 {
     ListInt row = newListInt(scope, M);
     memcpy(listDataPtr(row), _row, M * sizeof(int));
@@ -40,7 +40,7 @@ ListListInt newTable(Scope scope, int* _table, int N, int M)
     ListListInt table = newListListInt(scope, N);
     for(int i = 0; i < N; i++)
     {
-        listAtQ(table, i) = new_row(scope, _table, M);
+        listAtQ(table, i) = newRow(scope, _table, M);
         _table += M;
     }
     return table;
