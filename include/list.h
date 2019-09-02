@@ -4,28 +4,28 @@
 #include <stdlib.h>
 #include "object.h"
 
-#define ALWAYS_BOUND_CHECK 0
+#define ALWAYS_BOUND_CHECK                      0
 
-#define ERR_INVALID_LIST "Access an invalid list"
-#define ERR_LIST_AT "Get element of an invalid list or index out of range"
-#define ERR_POP_LIST "Pop an empty or invalid list"
-#define ERR_LIST_INDEX_OUT_OF_RANGE "List index out of range"
-#define ERR_MODIFY_READONLY_LIST "Modify a readonly list"
-#define ERR_INVALID_LIST_SLICE "Get slice of invalid list or index out of range"
-#define ERR_SOURCE_INDEX "Source index out of range"
-#define ERR_DEST_INDEX "Destination index out of range"
-#define ERR_SRC_DST_TYPE "Source and destination list having different types"
+#define ERR_INVALID_LIST                        "Access an invalid list"
+#define ERR_LIST_AT                             "Get element of an invalid list or index out of range"
+#define ERR_POP_LIST                            "Pop an empty or invalid list"
+#define ERR_LIST_INDEX_OUT_OF_RANGE             "List index out of range"
+#define ERR_MODIFY_READONLY_LIST                "Modify a readonly list"
+#define ERR_INVALID_LIST_SLICE                  "Get slice of invalid list or index out of range"
+#define ERR_SOURCE_INDEX                        "Source index out of range"
+#define ERR_DEST_INDEX                          "Destination index out of range"
+#define ERR_SRC_DST_TYPE                        "Source and destination list having different types"
 
-#define _ListTypeData(ListType) _##ListType##Data
-#define _ensureListCapFunc(ListType) _ensure##ListType##Cap
-#define _listAddFunc(ListType) _##ListType##Add
-#define _listResizeFunc(ListType) _##ListType##Resize
-#define _listPopFunc(ListType) _##ListType##Pop
-#define _listRemoveAtFunc(ListType) _##ListType##RemoveAt
-#define _listClearFunc(ListType) _##ListType##Clear
-#define _listSliceFunc(ListType) _##ListType##Slice
-#define _printListFunc(ListType) _print##ListType
-#define _newListFunc(ListType) new##ListType
+#define _ListTypeData(ListType)                 _##ListType##Data
+#define _ensureListCapFunc(ListType)            _ensure##ListType##Cap
+#define _listAddFunc(ListType)                  _##ListType##Add
+#define _listResizeFunc(ListType)               _##ListType##Resize
+#define _listPopFunc(ListType)                  _##ListType##Pop
+#define _listRemoveAtFunc(ListType)             _##ListType##RemoveAt
+#define _listClearFunc(ListType)                _##ListType##Clear
+#define _listSliceFunc(ListType)                _##ListType##Slice
+#define _printListFunc(ListType)                _print##ListType
+#define _newListFunc(ListType)                  new##ListType
 
 #define _DECLARE_LIST_TYPE(ListType, T)                                                                       \
     typedef struct _ListTypeData(ListType)                                                                    \
