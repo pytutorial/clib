@@ -3,21 +3,21 @@
 #include "list.h"
 #include "object.h"
 
-#define ERR_SET "Access an invalid set"
-#define SET_BUCKET_SIZE 1024
+#define ERR_SET                                 "Access an invalid set"
+#define SET_BUCKET_SIZE                         1024
 
-#define _SetTypeData(SetType) _##SetType##Data
-#define _ListItem(SetType) List##SetType##Item
-#define _ListListItem(SetType) ListList##SetType##Item
-#define _newListItemFunc(SetType) newList##SetType##Item
-#define _newListListItemFunc(SetType) newListList##SetType##Item
-#define _setAddFunc(SetType) _##SetType##Add
-#define _setContainsFunc(SetType) _##SetType##Contains
-#define _setRemoveFunc(SetType) _##SetType##Remove
-#define _setItemsFunc(SetType) _##SetType##Items
-#define _setItemsErrFunc(SetType) _##SetType##ItemsErr
-#define _printSetFunc(SetType) _print##SetType
-#define _newSetFunc(SetType) new##SetType
+#define _SetTypeData(SetType)                   _##SetType##Data
+#define _ListItem(SetType)                      List##SetType##Item
+#define _ListListItem(SetType)                  ListList##SetType##Item
+#define _newListItemFunc(SetType)               newList##SetType##Item
+#define _newListListItemFunc(SetType)           newListList##SetType##Item
+#define _setAddFunc(SetType)                    _##SetType##Add
+#define _setContainsFunc(SetType)               _##SetType##Contains
+#define _setRemoveFunc(SetType)                 _##SetType##Remove
+#define _setItemsFunc(SetType)                  _##SetType##Items
+#define _setItemsErrFunc(SetType)               _##SetType##ItemsErr
+#define _printSetFunc(SetType)                  _print##SetType
+#define _newSetFunc(SetType)                    new##SetType
 
 #define _DECLARE_SET_TYPE(SetType, T)                                                      \
     DECLARE_LIST(_ListItem(SetType), T);                                                   \

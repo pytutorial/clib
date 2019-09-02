@@ -19,6 +19,11 @@ void test_map(MapInt2Int m)
     printf("%d %d\n", map_get(m, 6, -1), map_get(m, 8, -1));
 }
 
+void print_item_int2string(ItemInt2String item)
+{
+    printf("(%d, \"%s\")", item.key, str_data(item.value));
+}
+
 int main()
 {    
     Scope scope = newScope();
@@ -55,6 +60,9 @@ int main()
     
     print_string(map_get(m3, 10, newString(scope, "")));
     printf("\n");
+
+    ListItemInt2String items3 = map_items(m3);
+    print_list(items3, print_item_int2string);
 
     free_scope(scope);
 }
