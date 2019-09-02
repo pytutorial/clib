@@ -28,7 +28,7 @@ int main()
     set_remove(s1, 2);
     print_set(s1, print_int);
 
-    List_int li = set_items(s1);
+    ListSetIntItem li = set_items(s1);
     print_list(li, print_int);
 
     SetString s2 = newSetString(scope); 

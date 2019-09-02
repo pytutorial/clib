@@ -7,10 +7,10 @@
 #define SET_BUCKET_SIZE 1024
 
 #define _SetTypeData(SetType) _##SetType##Data
-#define _List_T(T) List_##T
-#define _ListList_T(T) ListList_##T
-#define _newList_T_Func(T) newList_##T
-#define _newListList_T_Func(T) newListList_##T
+#define _ListItem(SetType) List##SetType##Item
+#define _ListListItem(SetType) ListList##SetType##Item
+#define _newListItemFunc(SetType) newList##SetType##Item
+#define _newListListItemFunc(SetType) newListList##SetType##Item
 #define _setAddFunc(SetType) _##SetType##Add
 #define _setContainsFunc(SetType) _##SetType##Contains
 #define _setRemoveFunc(SetType) _##SetType##Remove
@@ -20,11 +20,11 @@
 #define _newSetFunc(SetType) new##SetType
 
 #define _DECLARE_SET_TYPE(SetType, T)                                                      \
-    DECLARE_LIST(_List_T(T), T);                                                           \
-    DECLARE_LIST(_ListList_T(T), _List_T(T));                                              \
+    DECLARE_LIST(_ListItem(SetType), T);                                                   \
+    DECLARE_LIST(_ListListItem(SetType), _ListItem(SetType));                              \
     typedef struct _SetTypeData(SetType)                                                   \
     {                                                                                      \
-        _ListList_T(T) _table;                                                             \
+        _ListListItem(SetType) _table;                                                     \
         int _size;                                                                         \
         int _n_active_bucket;                                                              \
         int (*_hash_func)(T);                                                              \
@@ -32,43 +32,43 @@
         void (*_add)(struct _SetTypeData(SetType) * s, T item);                            \
         bool (*_contains)(struct _SetTypeData(SetType) * s, T item);                       \
         void (*_remove)(struct _SetTypeData(SetType) * s, T item);                         \
-        _List_T(T) (*_items)(struct _SetTypeData(SetType) * m);                            \
-        _List_T(T) (*_items_err)(struct _SetTypeData(SetType) * m);                        \
+        _ListItem(SetType) (*_items)(struct _SetTypeData(SetType) * m);                    \
+        _ListItem(SetType) (*_items_err)(struct _SetTypeData(SetType) * m);                \
         void (*_print)(struct _SetTypeData(SetType) * s, void (*print_item_func)(T item)); \
         Scope scope;                                                                       \
     }                                                                                      \
     *SetType;
 
-#define _DECLARE_SET_ADD(SetType, T)                              \
-    inline static void _setAddFunc(SetType)(SetType s, T item)    \
-    {                                                             \
-        int hash = (s->_hash_func)(item);                         \
-        int index = (unsigned)hash % s->_table->_size;            \
-        _List_T(T) lst_item = list_at_q(s->_table, index);        \
-                                                                  \
-        if (lst_item->_size == 0)                                 \
-        {                                                         \
-            int n_active_bucket = ++(s->_n_active_bucket);        \
-                                                                  \
-            if (n_active_bucket > s->_table->_size / 2)           \
-            {                                                     \
-                list_resize(s->_table, 3 * s->_table->_size / 2); \
-            }                                                     \
-        }                                                         \
-        bool contained = FALSE;                                   \
-        for (int i = 0; i < lst_item->_size; i++)                 \
-        {                                                         \
-            if (((s)->_equal_func)(item, list_at_q(lst_item, i))) \
-            {                                                     \
-                contained = TRUE;                                 \
-                break;                                            \
-            }                                                     \
-        }                                                         \
-        if (!contained)                                           \
-        {                                                         \
-            list_add(lst_item, item);                             \
-            s->_size += 1;                                        \
-        }                                                         \
+#define _DECLARE_SET_ADD(SetType, T)                               \
+    inline static void _setAddFunc(SetType)(SetType s, T item)     \
+    {                                                              \
+        int hash = (s->_hash_func)(item);                          \
+        int index = (unsigned)hash % s->_table->_size;             \
+        _ListItem(SetType) lst_item = list_at_q(s->_table, index); \
+                                                                   \
+        if (lst_item->_size == 0)                                  \
+        {                                                          \
+            int n_active_bucket = ++(s->_n_active_bucket);         \
+                                                                   \
+            if (n_active_bucket > s->_table->_size / 2)            \
+            {                                                      \
+                list_resize(s->_table, 3 * s->_table->_size / 2);  \
+            }                                                      \
+        }                                                          \
+        bool contained = FALSE;                                    \
+        for (int i = 0; i < lst_item->_size; i++)                  \
+        {                                                          \
+            if (((s)->_equal_func)(item, list_at_q(lst_item, i)))  \
+            {                                                      \
+                contained = TRUE;                                  \
+                break;                                             \
+            }                                                      \
+        }                                                          \
+        if (!contained)                                            \
+        {                                                          \
+            list_add(lst_item, item);                              \
+            s->_size += 1;                                         \
+        }                                                          \
     }
 
 #define _DECLARE_SET_CONTAINS(SetType, T)                           \
@@ -76,7 +76,7 @@
     {                                                               \
         int hash = (s->_hash_func)(item);                           \
         int index = (unsigned)hash % s->_table->_size;              \
-        _List_T(T) lst_item = list_at_q(s->_table, index);          \
+        _ListItem(SetType) lst_item = list_at_q(s->_table, index);  \
         for (int i = 0; i < lst_item->_size; i++)                   \
         {                                                           \
             if ((s->_equal_func)(item, list_at_q(lst_item, i)))     \
@@ -87,49 +87,49 @@
         return FALSE;                                               \
     }
 
-#define _DECLARE_SET_REMOVE(SetType, T)                           \
-    inline static void _setRemoveFunc(SetType)(SetType s, T item) \
-    {                                                             \
-        int hash = (s->_hash_func)(item);                         \
-        int index = (unsigned)hash % s->_table->_size;            \
-        _List_T(T) lst_item = list_at_q(s->_table, index);        \
-        for (int i = 0; i < lst_item->_size; i++)                 \
-        {                                                         \
-            if ((s->_equal_func)(item, list_at_q(lst_item, i)))   \
-            {                                                     \
-                list_remove_at(lst_item, i);                      \
-                return;                                           \
-            }                                                     \
-        }                                                         \
+#define _DECLARE_SET_REMOVE(SetType, T)                            \
+    inline static void _setRemoveFunc(SetType)(SetType s, T item)  \
+    {                                                              \
+        int hash = (s->_hash_func)(item);                          \
+        int index = (unsigned)hash % s->_table->_size;             \
+        _ListItem(SetType) lst_item = list_at_q(s->_table, index); \
+        for (int i = 0; i < lst_item->_size; i++)                  \
+        {                                                          \
+            if ((s->_equal_func)(item, list_at_q(lst_item, i)))    \
+            {                                                      \
+                list_remove_at(lst_item, i);                       \
+                return;                                            \
+            }                                                      \
+        }                                                          \
     }
 
-#define _DECLARE_SET_ITEMS(SetType, T)                         \
-    inline static _List_T(T) _setItemsFunc(SetType)(SetType s) \
-    {                                                          \
-        _List_T(T) items = _newList_T_Func(T)(s->scope, 0);    \
-        for (int index = 0; index < s->_table->_size; index++) \
-        {                                                      \
-            _List_T(T) lst_item = list_at_q(s->_table, index); \
-            for (int i = 0; i < lst_item->_size; i++)          \
-            {                                                  \
-                list_add(items, list_at_q(lst_item, i));       \
-            }                                                  \
-        }                                                      \
-        return items;                                          \
+#define _DECLARE_SET_ITEMS(SetType, T)                                     \
+    inline static _ListItem(SetType) _setItemsFunc(SetType)(SetType s)     \
+    {                                                                      \
+        _ListItem(SetType) items = _newListItemFunc(SetType)(s->scope, 0); \
+        for (int index = 0; index < s->_table->_size; index++)             \
+        {                                                                  \
+            _ListItem(SetType) lst_item = list_at_q(s->_table, index);     \
+            for (int i = 0; i < lst_item->_size; i++)                      \
+            {                                                              \
+                list_add(items, list_at_q(lst_item, i));                   \
+            }                                                              \
+        }                                                                  \
+        return items;                                                      \
     }
 
-#define _DECLARE_SET_ITEMS_ERR(SetType, T)                        \
-    inline static _List_T(T) _setItemsErrFunc(SetType)(SetType s) \
-    {                                                             \
-        QUIT(ERR_SET, __FILE__, __LINE__);                        \
-        _List_T(T) items = _newList_T_Func(T)(s->scope, 0);       \
-        return items;                                             \
+#define _DECLARE_SET_ITEMS_ERR(SetType, T)                                 \
+    inline static _ListItem(SetType) _setItemsErrFunc(SetType)(SetType s)  \
+    {                                                                      \
+        QUIT(ERR_SET, __FILE__, __LINE__);                                 \
+        _ListItem(SetType) items = _newListItemFunc(SetType)(s->scope, 0); \
+        return items;                                                      \
     }
 
 #define _DECLARE_SET_PRINT(SetType, T)                                                    \
     inline static void _printSetFunc(SetType)(SetType s, void (*print_item_func)(T item)) \
     {                                                                                     \
-        _List_T(T) items = _setItemsFunc(SetType)(s);                                     \
+        _ListItem(SetType) items = _setItemsFunc(SetType)(s);                             \
         printf("{");                                                                      \
         for (int i = 0; i < items->_size; i++)                                            \
         {                                                                                 \
@@ -140,28 +140,28 @@
         printf("}\n");                                                                    \
     }
 
-#define _DECLARE_SET_NEW(SetType, T, hash_func, equal_func)                         \
-    inline static SetType _newSetFunc(SetType)(Scope scope)                         \
-    {                                                                               \
-        SetType s = zero_alloc(scope, sizeof(struct _SetTypeData(SetType)));        \
-        s->_table = (_ListList_T(T))_newListList_T_Func(T)(scope, SET_BUCKET_SIZE); \
-        s->_size = 0;                                                               \
-        s->_n_active_bucket = 0;                                                    \
-        s->_hash_func = hash_func;                                                  \
-        s->_equal_func = equal_func;                                                \
-        s->_add = _setAddFunc(SetType);                                             \
-        s->_contains = _setContainsFunc(SetType);                                   \
-        s->_remove = _setRemoveFunc(SetType);                                       \
-        s->_items = _setItemsFunc(SetType);                                         \
-        s->_items_err = _setItemsErrFunc(SetType);                                  \
-        s->_print = _printSetFunc(SetType);                                         \
-        s->scope = scope;                                                           \
-                                                                                    \
-        for (int i = 0; i < SET_BUCKET_SIZE; i++)                                   \
-        {                                                                           \
-            list_at_q(s->_table, i) = (_List_T(T))_newList_T_Func(T)(scope, 0);     \
-        }                                                                           \
-        return s;                                                                   \
+#define _DECLARE_SET_NEW(SetType, T, hash_func, equal_func)                                        \
+    inline static SetType _newSetFunc(SetType)(Scope scope)                                        \
+    {                                                                                              \
+        SetType s = zero_alloc(scope, sizeof(struct _SetTypeData(SetType)));                       \
+        s->_table = (_ListListItem(SetType))_newListListItemFunc(SetType)(scope, SET_BUCKET_SIZE); \
+        s->_size = 0;                                                                              \
+        s->_n_active_bucket = 0;                                                                   \
+        s->_hash_func = hash_func;                                                                 \
+        s->_equal_func = equal_func;                                                               \
+        s->_add = _setAddFunc(SetType);                                                            \
+        s->_contains = _setContainsFunc(SetType);                                                  \
+        s->_remove = _setRemoveFunc(SetType);                                                      \
+        s->_items = _setItemsFunc(SetType);                                                        \
+        s->_items_err = _setItemsErrFunc(SetType);                                                 \
+        s->_print = _printSetFunc(SetType);                                                        \
+        s->scope = scope;                                                                          \
+                                                                                                   \
+        for (int i = 0; i < SET_BUCKET_SIZE; i++)                                                  \
+        {                                                                                          \
+            list_at_q(s->_table, i) = (_ListItem(SetType))_newListItemFunc(SetType)(scope, 0);     \
+        }                                                                                          \
+        return s;                                                                                  \
     }
 
 #define DECLARE_SET(SetType, T, hash_func, equal_func) \
@@ -193,7 +193,7 @@
         _check_set_valid(s);  \
         ((s)->_add)(s, item); \
     }
-    
+
 #define set_remove(s, item)      \
     {                            \
         _check_set_valid(s);     \
