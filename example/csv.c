@@ -29,13 +29,13 @@ ListListDouble readCsv(Scope scope, const char* fn, const char* delimiter, int s
         {
             String st = newString(scope2, line);
             ListString lst = splitString(st, delimiter);
-            int n_items = listSize(lst);
+            int nItem = listSize(lst);
 
-            if (n_items > 0)
+            if (nItem > 0)
             {
-                ListDouble row = newListDouble(scope, n_items);
+                ListDouble row = newListDouble(scope, nItem);
 
-                for (int i = 0; i < n_items; i++)
+                for (int i = 0; i < nItem; i++)
                 {
                     listAtQ(row, i) = atof(stringDataPtr(listAtQ(lst, i)));
                 }
