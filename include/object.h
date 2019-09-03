@@ -30,7 +30,7 @@ typedef struct _ScopeData
 #define _newObjectFunc(Object)                  new##Object
 #define _makeObjectFunc(Object)                 make##Object
 
-#define OBJ_TYPE_DEF(Object, T)                                              \
+#define OBJ_TYPE_DEF(Object, T)                                                \
     typedef struct _ObjectDataType(Object)                                     \
     {                                                                          \
         T _data;                                                               \
