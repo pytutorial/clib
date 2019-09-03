@@ -19,9 +19,9 @@
 #define _printSetFunc(SetType)                  _print##SetType
 #define _newSetFunc(SetType)                    new##SetType
 
-#define _DECLARE_SET_TYPE(SetType, T)                                                    \
-    DECLARE_LIST_TYPE(_ListItem(SetType), T);                                                 \
-    DECLARE_LIST_TYPE(_ListListItem(SetType), _ListItem(SetType));                            \
+#define _SET_TYPE_DEF(SetType, T)                                                        \
+    LIST_TYPE_DEF(_ListItem(SetType), T);                                                \
+    LIST_TYPE_DEF(_ListListItem(SetType), _ListItem(SetType));                           \
     typedef struct _SetTypeData(SetType)                                                 \
     {                                                                                    \
         _ListListItem(SetType) _table;                                                   \
@@ -39,7 +39,7 @@
     }                                                                                    \
     *SetType;
 
-#define _DECLARE_SET_TYPE_ADD(SetType, T)                        \
+#define _SET_TYPE_ADD_DEF(SetType, T)                            \
     inline static void _setAddFunc(SetType)(SetType s, T item)   \
     {                                                            \
         int hash = (s->_hashFunc)(item);                         \
@@ -71,7 +71,7 @@
         }                                                        \
     }
 
-#define _DECLARE_SET_TYPE_CONTAINS(SetType, T)                      \
+#define _SET_TYPE_CONTAINS_DEF(SetType, T)                          \
     inline static bool _setContainsFunc(SetType)(SetType s, T item) \
     {                                                               \
         int hash = (s->_hashFunc)(item);                            \
@@ -87,7 +87,7 @@
         return FALSE;                                               \
     }
 
-#define _DECLARE_SET_TYPE_REMOVE(SetType, T)                      \
+#define _SET_TYPE_REMOVE_DEF(SetType, T)                          \
     inline static void _setRemoveFunc(SetType)(SetType s, T item) \
     {                                                             \
         int hash = (s->_hashFunc)(item);                          \
@@ -103,7 +103,7 @@
         }                                                         \
     }
 
-#define _DECLARE_SET_TYPE_ITEMS(SetType, T)                                \
+#define _SET_TYPE_ITEMS_DEF(SetType, T)                                    \
     inline static _ListItem(SetType) _setItemsFunc(SetType)(SetType s)     \
     {                                                                      \
         _ListItem(SetType) items = _newListItemFunc(SetType)(s->scope, 0); \
@@ -118,7 +118,7 @@
         return items;                                                      \
     }
 
-#define _DECLARE_SET_TYPE_ITEMS_ERR(SetType, T)                            \
+#define _SET_TYPE_ITEMS_ERR_DEF(SetType, T)                                \
     inline static _ListItem(SetType) _setItemsErrFunc(SetType)(SetType s)  \
     {                                                                      \
         QUIT(ERR_SET, __FILE__, __LINE__);                                 \
@@ -126,7 +126,7 @@
         return items;                                                      \
     }
 
-#define _DECLARE_SET_TYPE_PRINT(SetType, T)                                             \
+#define _SET_TYPE_PRINT_DEF(SetType, T)                                                 \
     inline static void _printSetFunc(SetType)(SetType s, void (*printItemFunc)(T item)) \
     {                                                                                   \
         _ListItem(SetType) items = _setItemsFunc(SetType)(s);                           \
@@ -140,7 +140,7 @@
         printf("}\n");                                                                  \
     }
 
-#define _DECLARE_SET_TYPE_NEW(SetType, T, hashFunc, equalFunc)                                     \
+#define _SET_TYPE_NEW_DEF(SetType, T, hashFunc, equalFunc)                                         \
     inline static SetType _newSetFunc(SetType)(Scope scope)                                        \
     {                                                                                              \
         SetType s = zeroAlloc(scope, sizeof(struct _SetTypeData(SetType)));                        \
@@ -164,15 +164,15 @@
         return s;                                                                                  \
     }
 
-#define DECLARE_SET_TYPE(SetType, T, hashFunc, equalFunc) \
-    _DECLARE_SET_TYPE(SetType, T)                         \
-    _DECLARE_SET_TYPE_ADD(SetType, T)                     \
-    _DECLARE_SET_TYPE_CONTAINS(SetType, T)                \
-    _DECLARE_SET_TYPE_REMOVE(SetType, T)                  \
-    _DECLARE_SET_TYPE_ITEMS(SetType, T)                   \
-    _DECLARE_SET_TYPE_ITEMS_ERR(SetType, T)               \
-    _DECLARE_SET_TYPE_PRINT(SetType, T)                   \
-    _DECLARE_SET_TYPE_NEW(SetType, T, hashFunc, equalFunc)
+#define SET_TYPE_DEF(SetType, T, hashFunc, equalFunc) \
+    _SET_TYPE_DEF(SetType, T)                         \
+    _SET_TYPE_ADD_DEF(SetType, T)                     \
+    _SET_TYPE_CONTAINS_DEF(SetType, T)                \
+    _SET_TYPE_REMOVE_DEF(SetType, T)                  \
+    _SET_TYPE_ITEMS_DEF(SetType, T)                   \
+    _SET_TYPE_ITEMS_ERR_DEF(SetType, T)               \
+    _SET_TYPE_PRINT_DEF(SetType, T)                   \
+    _SET_TYPE_NEW_DEF(SetType, T, hashFunc, equalFunc)
 
 #define _isValidSet(s) ((s) != NULL && (s)->scope != NULL && (s)->scope->state == VALID)
 
@@ -214,7 +214,7 @@ static inline bool intEqual(int x1, int x2) { return x1 == x2; }
 static inline int hashLong(long x) { return x; }
 static inline bool longEqual(long x1, long x2) { return x1 == x2; }
 
-DECLARE_SET_TYPE(SetInt, int, hashInt, intEqual);
-DECLARE_SET_TYPE(SetLong, long, hashLong, longEqual);
+SET_TYPE_DEF(SetInt, int, hashInt, intEqual);
+SET_TYPE_DEF(SetLong, long, hashLong, longEqual);
 
 #endif

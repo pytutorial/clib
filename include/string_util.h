@@ -12,7 +12,7 @@ typedef struct _StringData
     Scope scope;
 }* String;
 
-DECLARE_LIST_TYPE(ListString, String);
+LIST_TYPE_DEF(ListString, String);
 
 int stringLen(String st);
 

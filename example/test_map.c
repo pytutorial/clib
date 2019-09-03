@@ -1,8 +1,8 @@
 #include "map.h"
 #include "string_util.h"
 
-DECLARE_MAP_TYPE(Int2String, int, String, hashInt, intEqual);
-DECLARE_MAP_TYPE(String2Int, String, int, hashString, stringEqual);
+MAP_TYPE_DEF(Int2String, int, String, hashInt, intEqual);
+MAP_TYPE_DEF(String2Int, String, int, hashString, stringEqual);
 
 void printInt(int i)
 {

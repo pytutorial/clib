@@ -27,7 +27,7 @@
 #define _printListFunc(ListType)                _print##ListType
 #define _newListFunc(ListType)                  new##ListType
 
-#define _DECLARE_LIST_TYPE(ListType, T)                                                                       \
+#define _LIST_TYPE_DEF(ListType, T)                                                                           \
     typedef struct _ListTypeData(ListType)                                                                    \
     {                                                                                                         \
         T *_items;                                                                                            \
@@ -45,7 +45,7 @@
     }                                                                                                         \
     *ListType;
 
-#define _DECLARE_LIST_TYPE_ENSURE_CAP(ListType, T)                         \
+#define _LIST_TYPE_ENSURE_CAP_DEF(ListType, T)                             \
     inline static void _ensureListCapFunc(ListType)(ListType lst, int cap) \
     {                                                                      \
         if (lst->_capacity < cap)                                          \
@@ -64,7 +64,7 @@
         }                                                                  \
     }
 
-#define _DECLARE_LIST_TYPE_ADD(ListType, T)                         \
+#define _LIST_TYPE_ADD_DEF(ListType, T)                             \
     inline static void _listAddFunc(ListType)(ListType lst, T item) \
     {                                                               \
         _ensureListCapFunc(ListType)(lst, 1 + lst->_size);          \
@@ -72,20 +72,20 @@
         lst->_size += 1;                                            \
     }
 
-#define _DECLARE_LIST_TYPE_RESIZE(ListType, T)                           \
+#define _LIST_TYPE_RESIZE_DEF(ListType, T)                               \
     inline static void _listResizeFunc(ListType)(ListType lst, int size) \
     {                                                                    \
         _ensureListCapFunc(ListType)(lst, size);                         \
         lst->_size = size;                                               \
     }
 
-#define _DECLARE_LIST_TYPE_POP(ListType, T)              \
+#define _LIST_TYPE_POP_DEF(ListType, T)                  \
     inline static T _listPopFunc(ListType)(ListType lst) \
     {                                                    \
         return lst->_items[--lst->_size];                \
     }
 
-#define _DECLARE_LIST_TYPE_REMOVE_AT(ListType, T)                           \
+#define _LIST_TYPE_REMOVE_AT_DEF(ListType, T)                               \
     inline static void _listRemoveAtFunc(ListType)(ListType lst, int index) \
     {                                                                       \
         for (int i = index; i < lst->_size - 1; i++)                        \
@@ -95,13 +95,13 @@
         lst->_size -= 1;                                                    \
     }
 
-#define _DECLARE_LIST_TYPE_CLEAR(ListType, T)                 \
+#define _LIST_TYPE_CLEAR_DEF(ListType, T)                     \
     inline static void _listClearFunc(ListType)(ListType lst) \
     {                                                         \
         _listResizeFunc(ListType)(lst, 0);                    \
     }
 
-#define _DECLARE_LIST_TYPE_SLICE(ListType, T)                                           \
+#define _LIST_TYPE_SLICE_DEF(ListType, T)                                               \
     inline static ListType _listSliceFunc(ListType)(ListType lst, int start, int end)   \
     {                                                                                   \
         ListType slice = zeroAlloc(lst->scope, sizeof(struct _ListTypeData(ListType))); \
@@ -119,7 +119,7 @@
         return slice;                                                                   \
     }
 
-#define _DECLARE_LIST_TYPE_PRINT(ListType, T)                                                \
+#define _LIST_TYPE_PRINT_DEF(ListType, T)                                                    \
     inline static void _printListFunc(ListType)(ListType lst, void (*printItemFunc)(T item)) \
     {                                                                                        \
         printf("[");                                                                         \
@@ -134,7 +134,7 @@
         printf("]\n");                                                                       \
     }
 
-#define _DECLARE_NEW_LIST(ListType, T)                                           \
+#define _NEW_LIST_TYPE_DEF(ListType, T)                                          \
     inline static ListType _newListFunc(ListType)(Scope scope, int size)         \
     {                                                                            \
         ListType lst = zeroAlloc(scope, sizeof(struct _ListTypeData(ListType))); \
@@ -152,17 +152,17 @@
         return lst;                                                              \
     }
 
-#define DECLARE_LIST_TYPE(ListType, T)                        \
-    _DECLARE_LIST_TYPE(ListType, T)                           \
-    _DECLARE_LIST_TYPE_ENSURE_CAP(ListType, T)                \
-    _DECLARE_LIST_TYPE_ADD(ListType, T)                       \
-    _DECLARE_LIST_TYPE_RESIZE(ListType, T)                    \
-    _DECLARE_LIST_TYPE_POP(ListType, T)                       \
-    _DECLARE_LIST_TYPE_REMOVE_AT(ListType, T)                 \
-    _DECLARE_LIST_TYPE_CLEAR(ListType, T)                     \
-    _DECLARE_LIST_TYPE_SLICE(ListType, T)                     \
-    _DECLARE_LIST_TYPE_PRINT(ListType, T)                     \
-    _DECLARE_NEW_LIST(ListType, T)
+#define LIST_TYPE_DEF(ListType, T)                        \
+    _LIST_TYPE_DEF(ListType, T)                           \
+    _LIST_TYPE_ENSURE_CAP_DEF(ListType, T)                \
+    _LIST_TYPE_ADD_DEF(ListType, T)                       \
+    _LIST_TYPE_RESIZE_DEF(ListType, T)                    \
+    _LIST_TYPE_POP_DEF(ListType, T)                       \
+    _LIST_TYPE_REMOVE_AT_DEF(ListType, T)                 \
+    _LIST_TYPE_CLEAR_DEF(ListType, T)                     \
+    _LIST_TYPE_SLICE_DEF(ListType, T)                     \
+    _LIST_TYPE_PRINT_DEF(ListType, T)                     \
+    _NEW_LIST_TYPE_DEF(ListType, T)
 
 #define listAt(lst, i) (*(((unsigned)(i) < (unsigned)(lst)->_size && (lst)->scope->state == VALID) ? ((lst)->_items + (i)) : (typeof((lst)->_items))QUIT(ERR_LIST_AT, __FILE__, __LINE__).ptr))
 
@@ -264,11 +264,11 @@
         (lst)->_print(lst, printItemFunc); \
     }
 
-DECLARE_LIST_TYPE(ListInt, int);
-DECLARE_LIST_TYPE(ListChar, char);
-DECLARE_LIST_TYPE(ListLong, long);
-DECLARE_LIST_TYPE(ListShort, short);
-DECLARE_LIST_TYPE(ListDouble, double);
-DECLARE_LIST_TYPE(ListFloat, float);
+LIST_TYPE_DEF(ListInt, int);
+LIST_TYPE_DEF(ListChar, char);
+LIST_TYPE_DEF(ListLong, long);
+LIST_TYPE_DEF(ListShort, short);
+LIST_TYPE_DEF(ListDouble, double);
+LIST_TYPE_DEF(ListFloat, float);
 
 #endif

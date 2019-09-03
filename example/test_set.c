@@ -2,7 +2,7 @@
 #include "set.h"
 #include "string_util.h"
 
-DECLARE_SET_TYPE(SetString, String, hashString, stringEqual);
+SET_TYPE_DEF(SetString, String, hashString, stringEqual);
 
 
 void printString(String st)

@@ -23,14 +23,14 @@
 #define _printMapFunc(K2V)                      _printMap##K2V
 #define _newMapFunc(K2V)                        newMap##K2V
 
-#define _DECLARE_MAP_TYPE(K2V, K, V)                                                                                \
+#define _MAP_TYPE_DEF(K2V, K, V)                                                                                    \
     typedef struct                                                                                                  \
     {                                                                                                               \
         K key;                                                                                                      \
         V value;                                                                                                    \
     } _ItemType(K2V);                                                                                               \
-    DECLARE_LIST_TYPE(_ListItemType(K2V), _ItemType(K2V));                                                               \
-    DECLARE_LIST_TYPE(_ListListItemType(K2V), _ListItemType(K2V));                                                       \
+    LIST_TYPE_DEF(_ListItemType(K2V), _ItemType(K2V));                                                              \
+    LIST_TYPE_DEF(_ListListItemType(K2V), _ListItemType(K2V));                                                      \
     typedef struct _MapTypeData(K2V)                                                                                \
     {                                                                                                               \
         _ListListItemType(K2V) _table;                                                                              \
@@ -50,7 +50,7 @@
     }                                                                                                               \
     *_MapType(K2V);
 
-#define _DECLARE_MAP_TYPE_GET(K2V, K, V)                                     \
+#define _MAP_TYPE_GET_DEF(K2V, K, V)                                         \
     inline static V _mapGetFunc(K2V)(_MapType(K2V) m, K key, V defaultValue) \
     {                                                                        \
         int hash = (m->_hashFunc)(key);                                      \
@@ -66,14 +66,14 @@
         return defaultValue;                                                 \
     }
 
-#define _DECLARE_MAP_TYPE_GET_ERR(K2V, K, V)            \
+#define _MAP_TYPE_GET_ERR_DEF(K2V, K, V)                \
     inline static V _mapGetErrFunc(K2V)(V defaultValue) \
     {                                                   \
         QUIT(ERR_MAP, __FILE__, __LINE__);              \
         return defaultValue;                            \
     }
 
-#define _DECLARE_MAP_TYPE_PUT(K2V, K, V)                                 \
+#define _MAP_TYPE_PUT_DEF(K2V, K, V)                                     \
     inline static void _mapPutFunc(K2V)(_MapType(K2V) m, K key, V value) \
     {                                                                    \
         int hash = (m->_hashFunc)(key);                                  \
@@ -107,7 +107,7 @@
         }                                                                \
     }
 
-#define _DECLARE_MAP_TYPE_CONTAINS(K2V, K, V)                           \
+#define _MAP_TYPE_CONTAINS_DEF(K2V, K, V)                               \
     inline static bool _mapContainsKeyFunc(K2V)(_MapType(K2V) m, K key) \
     {                                                                   \
         int hash = (m->_hashFunc)(key);                                 \
@@ -123,7 +123,7 @@
         return FALSE;                                                   \
     }
 
-#define _DECLARE_MAP_TYPE_REMOVE(K2V, K, V)                        \
+#define _MAP_TYPE_REMOVE_DEF(K2V, K, V)                            \
     inline static void _mapRemoveFunc(K2V)(_MapType(K2V) m, K key) \
     {                                                              \
         int hash = (m->_hashFunc)(key);                            \
@@ -139,7 +139,7 @@
         }                                                          \
     }
 
-#define _DECLARE_MAP_TYPE_ITEMS(K2V, K, V)                               \
+#define _MAP_TYPE_ITEMS_DEF(K2V, K, V)                                   \
     inline static _ListItemType(K2V) _mapItemsFunc(K2V)(_MapType(K2V) m) \
     {                                                                    \
         _ListItemType(K2V) items = _newListItemFunc(K2V)(m->scope, 0);   \
@@ -154,7 +154,7 @@
         return items;                                                    \
     }
 
-#define _DECLARE_MAP_TYPE_ITEMS_ERR(K2V, K, V)                              \
+#define _MAP_TYPE_ITEMS_ERR_DEF(K2V, K, V)                                  \
     inline static _ListItemType(K2V) _mapItemsErrFunc(K2V)(_MapType(K2V) m) \
     {                                                                       \
         QUIT(ERR_MAP, __FILE__, __LINE__);                                  \
@@ -162,7 +162,7 @@
         return items;                                                       \
     }
 
-#define _DECLARE_MAP_TYPE_PRINT(K2V, K, V)                                                                               \
+#define _MAP_TYPE_PRINT_DEF(K2V, K, V)                                                                                   \
     inline static void _printMapFunc(K2V)(_MapType(K2V) m, void (*printKeyFunc)(K key), void (*printValueFunc)(V value)) \
     {                                                                                                                    \
         _ListItemType(K2V) items = _mapItemsFunc(K2V)(m);                                                                \
@@ -178,7 +178,7 @@
         printf("}\n");                                                                                                   \
     }
 
-#define _DECLARE_MAP_TYPE_NEW(K2V, K, V, hashFunc, equalFunc)                                  \
+#define _MAP_TYPE_NEW_DEF(K2V, K, V, hashFunc, equalFunc)                                      \
     inline static _MapType(K2V) _newMapFunc(K2V)(Scope scope)                                  \
     {                                                                                          \
         _MapType(K2V) m = zeroAlloc(scope, sizeof(struct _MapTypeData(K2V)));                  \
@@ -204,17 +204,17 @@
         return m;                                                                              \
     }
 
-#define DECLARE_MAP_TYPE(K2V, K, V, hashFunc, equalFunc) \
-    _DECLARE_MAP_TYPE(K2V, K, V)                         \
-    _DECLARE_MAP_TYPE_GET(K2V, K, V)                     \
-    _DECLARE_MAP_TYPE_GET_ERR(K2V, K, V)                 \
-    _DECLARE_MAP_TYPE_PUT(K2V, K, V)                     \
-    _DECLARE_MAP_TYPE_CONTAINS(K2V, K, V)                \
-    _DECLARE_MAP_TYPE_REMOVE(K2V, K, V)                  \
-    _DECLARE_MAP_TYPE_ITEMS(K2V, K, V)                   \
-    _DECLARE_MAP_TYPE_ITEMS_ERR(K2V, K, V)               \
-    _DECLARE_MAP_TYPE_PRINT(K2V, K, V)                   \
-    _DECLARE_MAP_TYPE_NEW(K2V, K, V, hashFunc, equalFunc)
+#define MAP_TYPE_DEF(K2V, K, V, hashFunc, equalFunc) \
+    _MAP_TYPE_DEF(K2V, K, V)                         \
+    _MAP_TYPE_GET_DEF(K2V, K, V)                     \
+    _MAP_TYPE_GET_ERR_DEF(K2V, K, V)                 \
+    _MAP_TYPE_PUT_DEF(K2V, K, V)                     \
+    _MAP_TYPE_CONTAINS_DEF(K2V, K, V)                \
+    _MAP_TYPE_REMOVE_DEF(K2V, K, V)                  \
+    _MAP_TYPE_ITEMS_DEF(K2V, K, V)                   \
+    _MAP_TYPE_ITEMS_ERR_DEF(K2V, K, V)               \
+    _MAP_TYPE_PRINT_DEF(K2V, K, V)                   \
+    _MAP_TYPE_NEW_DEF(K2V, K, V, hashFunc, equalFunc)
 
 #define _isValidMap(m) ((m) != NULL && (m)->scope != NULL && (m)->scope->state == VALID)
 
@@ -254,6 +254,6 @@
 static inline int hashInt(int x) { return x; }
 static inline bool intEqual(int x1, int x2) { return x1 == x2; }
 
-DECLARE_MAP_TYPE(Int2Int, int, int, hashInt, intEqual);
+MAP_TYPE_DEF(Int2Int, int, int, hashInt, intEqual);
 
 #endif
