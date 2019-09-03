@@ -1,25 +1,25 @@
 #include "map.h"
 #include "string_util.h"
 
-MAP_TYPE_DEF(Int2String, int, String, hashInt, intEqual);
-MAP_TYPE_DEF(String2Int, String, int, hashString, stringEqual);
+MAP_TYPE_DEF(Int_String, int, String, hashInt, intEqual);
+MAP_TYPE_DEF(String_Int, String, int, hashString, stringEqual);
 
 void printInt(int i)
 {
     printf("%d", i);
 }
 
-void printString(String st)
+void prInt_String(String st)
 {
     printf("\"%s\"", stringDataPtr(st));
 }
 
-void testMap(MapInt2Int m)
+void testMap(MapInt_Int m)
 {
     printf("%d %d\n", mapGet(m, 6, -1), mapGet(m, 8, -1));
 }
 
-void printItemInt2String(ItemInt2String item)
+void printItemInt_String(ItemInt_String item)
 {
     printf("(%d, \"%s\")", item.key, stringDataPtr(item.value));
 }
@@ -27,9 +27,9 @@ void printItemInt2String(ItemInt2String item)
 int main()
 {    
     Scope scope = newScope();
-    MapInt2Int m1 = newMapInt2Int(scope);
-    MapString2Int m2 = newMapString2Int(scope);
-    MapInt2String m3 = newMapInt2String(scope);
+    MapInt_Int m1 = newMapInt_Int(scope);
+    MapString_Int m2 = newMapString_Int(scope);
+    MapInt_String m3 = newMapInt_String(scope);
         
     mapPut(m1, 2, 1);
     mapPut(m1, 4, 2);
@@ -49,20 +49,20 @@ int main()
     mapPut(m2, newString(scope, "one"), 1);
     mapPut(m2, newString(scope, "two"), 2);
     mapPut(m2, newString(scope, "three"), 3);
-    printMap(m2, printString, printInt);
+    printMap(m2, prInt_String, printInt);
 
     mapPut(m3, 8, newString(scope, "eight"));
     mapPut(m3, 9, newString(scope, "night"));
     mapPut(m3, 10, newString(scope, "ten"));
-    printMap(m3, printInt, printString);
+    printMap(m3, printInt, prInt_String);
     
     printf("%d %d\n", mapGet(m1, 5, -1), mapGet(m2, newString(scope, "two"), -1));
     
-    printString(mapGet(m3, 10, newString(scope, "")));
+    prInt_String(mapGet(m3, 10, newString(scope, "")));
     printf("\n");
 
-    ListItemInt2String items3 = mapItems(m3);
-    printList(items3, printItemInt2String);
+    ListItemInt_String items3 = mapItems(m3);
+    printList(items3, printItemInt_String);
 
     freeScope(scope);
 }

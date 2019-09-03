@@ -1,11 +1,11 @@
 #include "map.h"
 
 LIST_TYPE_DEF(ListListInt, ListInt);
-MAP_TYPE_DEF(Int2ListListInt, int, ListListInt, hashInt, intEqual);
+MAP_TYPE_DEF(Int_ListListInt, int, ListListInt, hashInt, intEqual);
 
-MapInt2ListListInt groupBy(ListListInt table, int featureId)
+MapInt_ListListInt groupBy(ListListInt table, int featureId)
 {
-    MapInt2ListListInt m = newMapInt2ListListInt(table->scope);
+    MapInt_ListListInt m = newMapInt_ListListInt(table->scope);
     for(int i = 0; i < listSize(table); i++)
     {
         ListInt row = listAtQ(table, i);
@@ -79,7 +79,7 @@ int main()
 
     printTable(table);
 
-    MapInt2ListListInt groups = groupBy(table, 0);
+    MapInt_ListListInt groups = groupBy(table, 0);
     printMap(groups, printInt, printTable);
 
     freeScope(scope);

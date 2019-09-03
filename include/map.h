@@ -254,6 +254,6 @@
 static inline int hashInt(int x) { return x; }
 static inline bool intEqual(int x1, int x2) { return x1 == x2; }
 
-MAP_TYPE_DEF(Int2Int, int, int, hashInt, intEqual);
+MAP_TYPE_DEF(Int_Int, int, int, hashInt, intEqual);
 
 #endif
