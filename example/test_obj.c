@@ -8,7 +8,7 @@ typedef struct
     int y;
 } Point;
 
-DECLARE_OBJECT(PointObject, Point);
+OBJ_TYPE_DEF(PointObject, Point);
 
 PointObject new_point(Scope scope, int x, int y)
 {
@@ -25,7 +25,7 @@ typedef struct
     Scope scope;
 } Line;
 
-DECLARE_OBJECT(LineObject, Line);
+OBJ_TYPE_DEF(LineObject, Line);
 
 LineObject new_line(Scope scope, PointObject start, PointObject end)
 {
