@@ -9,7 +9,7 @@ void printInt(int i)
     printf("%d", i);
 }
 
-void prInt_String(String st)
+void printString(String st)
 {
     printf("\"%s\"", stringDataPtr(st));
 }
@@ -49,16 +49,16 @@ int main()
     mapPut(m2, newString(scope, "one"), 1);
     mapPut(m2, newString(scope, "two"), 2);
     mapPut(m2, newString(scope, "three"), 3);
-    printMap(m2, prInt_String, printInt);
+    printMap(m2, printString, printInt);
 
     mapPut(m3, 8, newString(scope, "eight"));
     mapPut(m3, 9, newString(scope, "night"));
     mapPut(m3, 10, newString(scope, "ten"));
-    printMap(m3, printInt, prInt_String);
+    printMap(m3, printInt, printString);
     
     printf("%d %d\n", mapGet(m1, 5, -1), mapGet(m2, newString(scope, "two"), -1));
     
-    prInt_String(mapGet(m3, 10, newString(scope, "")));
+    printString(mapGet(m3, 10, newString(scope, "")));
     printf("\n");
 
     ListItemInt_String items3 = mapItems(m3);
