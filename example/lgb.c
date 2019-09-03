@@ -34,7 +34,7 @@ typedef struct
     double weight;
 } TreeNode;
 
-DECLARE_OBJECT(TreeNodeObject, TreeNode);
+OBJ_TYPE_DEF(TreeNodeObject, TreeNode);
 
 typedef struct
 {
