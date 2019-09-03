@@ -20,8 +20,8 @@
 #define _newSetFunc(SetType)                    new##SetType
 
 #define _DECLARE_SET_TYPE(SetType, T)                                                    \
-    DECLARE_LIST(_ListItem(SetType), T);                                                 \
-    DECLARE_LIST(_ListListItem(SetType), _ListItem(SetType));                            \
+    DECLARE_LIST_TYPE(_ListItem(SetType), T);                                                 \
+    DECLARE_LIST_TYPE(_ListListItem(SetType), _ListItem(SetType));                            \
     typedef struct _SetTypeData(SetType)                                                 \
     {                                                                                    \
         _ListListItem(SetType) _table;                                                   \

@@ -18,7 +18,7 @@ void printItem(Item item)
     printf("{gre : %f, gpa : %f, rank : %f}", item.gre, item.gpa, item.rank);
 }
 
-DECLARE_LIST(ListItem, Item);
+DECLARE_LIST_TYPE(ListItem, Item);
 
 double randf()
 {

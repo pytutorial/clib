@@ -1,6 +1,6 @@
 #include "map.h"
 
-DECLARE_LIST(ListListInt, ListInt);
+DECLARE_LIST_TYPE(ListListInt, ListInt);
 DECLARE_MAP_TYPE(Int2ListListInt, int, ListListInt, hashInt, intEqual);
 
 MapInt2ListListInt groupBy(ListListInt table, int featureId)

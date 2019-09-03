@@ -29,8 +29,8 @@
         K key;                                                                                                      \
         V value;                                                                                                    \
     } _ItemType(K2V);                                                                                               \
-    DECLARE_LIST(_ListItemType(K2V), _ItemType(K2V));                                                               \
-    DECLARE_LIST(_ListListItemType(K2V), _ListItemType(K2V));                                                       \
+    DECLARE_LIST_TYPE(_ListItemType(K2V), _ItemType(K2V));                                                               \
+    DECLARE_LIST_TYPE(_ListListItemType(K2V), _ListItemType(K2V));                                                       \
     typedef struct _MapTypeData(K2V)                                                                                \
     {                                                                                                               \
         _ListListItemType(K2V) _table;                                                                              \
