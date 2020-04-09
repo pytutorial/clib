@@ -5,7 +5,7 @@
 
 #define MAX_LINE_LENGTH 102400
 
-ListListDouble readCsv(Scope scope, const char* fn, const char* delimiter, int skipHeader)
+ListListDouble readCsv(Scope scope, const char* fn, const char* delimiter, bool header)
 {
     ListListDouble table = newList(scope);
 
@@ -25,7 +25,7 @@ ListListDouble readCsv(Scope scope, const char* fn, const char* delimiter, int s
         char *line = zeroAlloc(scope2, MAX_LINE_LENGTH + 1);
         fgets(line, MAX_LINE_LENGTH, f);
 
-        if (i > 0 || !skipHeader)
+        if (i > 0 || !header)
         {
             String st = newString(scope2, line);
             ListString lst = splitString(st, delimiter);
@@ -37,10 +37,10 @@ ListListDouble readCsv(Scope scope, const char* fn, const char* delimiter, int s
 
                 for (int i = 0; i < nItem; i++)
                 {
-                    listAdd(row, atof(lst->items[i]->data));
+                    listPush(row, atof(lst->items[i]->data));
                 }
 
-                listAdd(table, row);
+                listPush(table, row);
             }
         }
 
