@@ -1,8 +1,6 @@
 #include "list.h"
 #include <stdio.h>
 
-
-
 int main()
 {
     Scope scope = newScope();
