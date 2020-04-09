@@ -5,18 +5,16 @@
 #include "object.h"
 #include "list.h"
 
-typedef struct _StringData
+typedef struct
 {
-    char *_data;
+    char *data;
     int _len;
     Scope scope;
-}* String;
+}_StringData, *String;
 
-LIST_TYPE_DEF(ListString, String);
+typedef List(String) ListString;
 
 int stringLen(String st);
-
-char *stringDataPtr(String st);
 
 String newNString(Scope scope, const char *src, int len);
 
@@ -30,10 +28,6 @@ String concatStringWithPtr(String st, char *p);
 
 String subString(String st, int start, int end);
 
-String rightString(String st, int start);
-
-String leftString(String st, int end);
-
 int findChar(String st, char needle);
 
 int findString(String st, const char *needle);
@@ -42,6 +36,6 @@ ListString splitString(String st, const char *delimiter);
 
 bool stringEqual(String st1, String st2);
 
-int hashString(String st);
+void printString(String st);
 
 #endif

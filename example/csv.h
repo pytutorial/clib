@@ -3,7 +3,7 @@
 
 #include "list.h"
 
-LIST_TYPE_DEF(ListListDouble, ListDouble);
+typedef List(ListDouble) ListListDouble;
 
 ListListDouble readCsv(Scope scope, const char* fn, const char* delimiter, int skipHeader);
 

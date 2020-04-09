@@ -7,7 +7,7 @@
 
 ListListDouble readCsv(Scope scope, const char* fn, const char* delimiter, int skipHeader)
 {
-    ListListDouble table = newListListDouble(scope, 0);
+    ListListDouble table = newList(scope);
 
     FILE *f = fopen(fn, "rt");
     if (!f)
@@ -33,11 +33,11 @@ ListListDouble readCsv(Scope scope, const char* fn, const char* delimiter, int s
 
             if (nItem > 0)
             {
-                ListDouble row = newListDouble(scope, nItem);
+                ListDouble row = newList(scope);
 
                 for (int i = 0; i < nItem; i++)
                 {
-                    listAtQ(row, i) = atof(stringDataPtr(listAtQ(lst, i)));
+                    listAdd(row, atof(lst->items[i]->data));
                 }
 
                 listAdd(table, row);
