@@ -12,7 +12,6 @@ typedef struct _ScopeData
     void **_items;
     int _size;
     int _capacity;
-    int state;
 } * Scope;
 
 Scope newScope();
