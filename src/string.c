@@ -27,22 +27,17 @@ String newString(Scope scope, const char *src)
     return newNString(scope, src, strlen(src));
 }
 
-char *_vsfmt(Scope scope, const char *fmt, va_list arglist, int *out_length)
-{
-    int len = vsnprintf(NULL, 0, fmt, arglist);
-    char *data = zeroAlloc(scope, len + 1);
-    vsprintf(data, fmt, arglist);
-    *out_length = len;
-    return data;
-}
-
-//TODO : Fix bug here
 String newStringFmt(Scope scope, const char *fmt, ...)
 {
     va_list arglist;
     va_start(arglist, fmt);
-    int len;
-    char *data = _vsfmt(scope, fmt, arglist, &len);
+    int len = vsnprintf(NULL, 0, fmt, arglist);
+    va_end(arglist);
+
+    char *data = zeroAlloc(scope, len + 1);
+
+    va_start(arglist, fmt);    
+    vsprintf(data, fmt, arglist);
     va_end(arglist);
     
     String st = zeroAlloc(scope, sizeof(_StringData));

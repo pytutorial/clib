@@ -9,11 +9,11 @@ int main()
     Scope scope = newScope();
 
     String st = newString(scope, "Hello ");
-    //String st2 = newStringFmt(scope, "%s %d", "world", 1);
-    String st3 = concatStringWithPtr(st, "world 1");
+    String st2 = newStringFmt(scope, "%s %d", "world", 1);
+    String st3 = concatString(st, st2);
 
     printString(st);
-    //printString(st2);
+    printString(st2);
     printString(st3);
 
     char *token = "Hello";
