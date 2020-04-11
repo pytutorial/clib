@@ -107,6 +107,17 @@ int findChar(String st, char needle)
     return pos ? pos - data : -1;
 }
 
+int findCharReverse(String st, char needle)
+{
+    char *pos = NULL;
+    char *data = st->data;
+
+    if (data)
+        pos = strrchr(data, needle);
+
+    return pos ? pos - data : -1;
+}
+
 int findString(String st, const char *needle)
 {
     char *pos = NULL;
@@ -116,6 +127,39 @@ int findString(String st, const char *needle)
         pos = strstr(data, needle);
 
     return pos ? pos - data : -1;
+}
+
+char* _strReverse(const char* st) 
+{
+    int len = strlen(st);
+    char* stRev = malloc(len+1);
+    stRev[len] = 0;
+    for(int i = 0; i < len; i++)
+    {
+        stRev[i] = st[len-1-i];
+    }
+    return stRev;
+}
+
+int findStringReverse(String st, const char *needle)
+{
+    if(st->data)
+    {
+        char* stRev = _strReverse(st->data);
+        char* needleRev = _strReverse(needle);
+        char* pos = strstr(stRev, needleRev);
+        
+        int ipos = -1;
+        if(pos)
+        {
+            ipos = st->_len - strlen(needleRev) - (pos - stRev);
+        }
+
+        free(stRev);
+        free(needleRev);
+        return ipos;
+    }
+    return -1;
 }
 
 ListString splitString(String st, const char *delimiter)

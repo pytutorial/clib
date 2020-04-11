@@ -30,7 +30,11 @@ String subString(String st, int start, int end);
 
 int findChar(String st, char needle);
 
+int findCharReverse(String st, char needle);
+
 int findString(String st, const char *needle);
+
+int findStringReverse(String st, const char *needle);
 
 ListString splitString(String st, const char *delimiter);
 
