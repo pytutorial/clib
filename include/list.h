@@ -71,6 +71,7 @@ inline static void* newList(Scope scope) {
         }
 
 typedef List(int) ListInt;
+typedef List(long) ListLong;
 typedef List(double) ListDouble;
 
 #endif
