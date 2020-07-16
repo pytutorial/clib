@@ -9,7 +9,7 @@
       i=0;                                                                      \
       j=N-1;                                                                    \
       while(i<j){                                                               \
-         if(key_func != NULL)                                                           \
+         if(key_func != NULL)                                                   \
          {                                                                      \
             while(key_func(number[i])<=key_func(number[pivot])&&i<N-1)          \
                i++;                                                             \
@@ -39,7 +39,8 @@
 
 void quicksort(int* number, int N) 
 {
-    _quicksort(number, N, NULL, quicksort);
+    int (*fun_ptr)(int) key_func = NULL;
+    _quicksort(number, N, key_func, quicksort);
 }
 
 int main()
