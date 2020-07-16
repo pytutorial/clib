@@ -43,12 +43,12 @@ inline static int indexTableGetIndex(ListListKeyIndex table, unsigned long key)
     return -1;
 }
 
-#define newHashMap(scope, bucketSize) \
-        { \
-                newIndexTable(scope, bucketSize), \
-                newList(scope), \
-                newList(scope), \
-                scope \
+#define newHashMap(scope, bucketSize)                                           \
+        {                                                                       \
+                newIndexTable(scope, bucketSize),                               \
+                newList(scope),                                                 \
+                newList(scope),                                                 \
+                scope                                                           \
         }
 
 #define hashMapSize(m) ((m).keys != NULL ? listSize((m).keys) : 0)
@@ -57,21 +57,27 @@ inline static int indexTableGetIndex(ListListKeyIndex table, unsigned long key)
 
 #define hashMapGet(m, key) ({int index = indexTableGetIndex((m)._table, (unsigned long) (key)); (m).values->items[(unsigned) index]; })
 
-#define hashMapGetOrDefault(m, key, defaultValue) \
-        ({int index = indexTableGetIndex(m._table, key); (index >= 0)? (m).values->items[index] : defaultValue;})
+#define hashMapGetOrDefault(m, key, defaultValue)                               \
+    ({                                                                          \
+        int index = indexTableGetIndex(m._table, key);                          \
+        (index >= 0)? (m).values->items[index] : defaultValue;                  \
+    })
 
-#define hashMapPut(m, key, value)  \
-{                                  \
-    int index = indexTableGetIndex((m)._table, key); \
-    if(index >= 0)  \
-    { \
-            (m).values->items[index] = value; \
-    } \
-    KeyIndex ki = {key, (m).keys->_size}; \
-    int bucketSize = listSize((m)._table);\
-    listPush((m)._table->items[(unsigned long) key % bucketSize], ki);\
-    listPush((m).keys, key); \
-    listPush((m).values, value); \
+#define hashMapPut(m, key, value)                                               \
+{                                                                               \
+    int index = indexTableGetIndex((m)._table, key);                            \
+    if(index >= 0)                                                              \
+    {                                                                           \
+        (m).values->items[index] = value;                                       \
+    }                                                                           \
+    else                                                                        \
+    {                                                                           \
+        KeyIndex ki = {key, (m).keys->_size};                                   \
+        int bucketSize = listSize((m)._table);                                  \
+        listPush((m)._table->items[(unsigned long) key % bucketSize], ki);      \
+        listPush((m).keys, key);                                                \
+        listPush((m).values, value);                                            \
+    }                                                                           \
 }
 
 #endif
