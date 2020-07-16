@@ -18,6 +18,14 @@ int main()
     listPush(lst, 3);
     listPush(lst, 5);
     listPush(lst, 7);
+    
+    hashMapPut(m, 20, newList(scope));
+    lst = hashMapGet(m, 20);
+    listPush(lst, 2);
+    listPush(lst, 4);
+    listPush(lst, 6);
+    listPush(lst, 8);
+    
     printHashMap(m, printItemLong_ListLong);
     printf("\n");
     freeScope(scope);
