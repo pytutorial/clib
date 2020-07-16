@@ -16,7 +16,7 @@ void printItemLong_ListLong(long key, ListLong value)
 int main()
 {
     Scope scope = newScope();
-    printItemLong_ListLong m = newHashMap(scope, 1024);
+    HashMapLong_ListLong m = newHashMap(scope, 1024);
     hashMapPut(m, 10, newList(scope));
     ListLong lst = hashMapGet(m, 10);
     listAdd(lst, 1);
