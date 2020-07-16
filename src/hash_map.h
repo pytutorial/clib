@@ -80,4 +80,18 @@ inline static int indexTableGetIndex(ListListKeyIndex table, unsigned long key)
     }                                                                           \
 }
 
+#define printHashMap(m, fmt)                                                    \
+    {                                                                           \
+        printf("{");                                                            \
+                                                                                \
+        for (int i = 0; i < hashMapSize(m); i++)                                \
+        {                                                                       \
+            printf(fmt, (m)->keys[i], (m)->values[i]);                          \
+            if (i < hashMapSize(m) - 1)                                         \
+                printf(", ");                                                   \
+        }                                                                       \
+                                                                                \
+        printf("}\n");                                                          \
+    }
+
 #endif

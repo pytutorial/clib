@@ -7,6 +7,8 @@ int main()
     Scope scope = newScope();
     HashMapLong_Long m = newHashMap(scope, 1024);
     hashMapPut(m, 100, 10);
-    printf("%ld\n", hashMapGet(m, 100));
+    hashMapPut(m, 200, 20);
+    hashMapPut(m, 300, 30);
+    printHashMap(m);
     freeScope(scope);
 }
