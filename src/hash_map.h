@@ -91,7 +91,7 @@ inline static int indexTableGetIndex(ListListKeyIndex table, unsigned long key)
                 printf(", ");                                                   \
         }                                                                       \
                                                                                 \
-        printf("}\n");                                                          \
+        printf("}");                                                          \
     }
 
 #endif

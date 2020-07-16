@@ -4,13 +4,8 @@ typedef HashMap(long, ListLong) HashMapLong_ListLong;
 
 void printItemLong_ListLong(long key, ListLong value)
 {
-    printf("%ld=[", key);
-    for(int i = 0; i < listSize(value); i++) 
-    {
-        printf("%ld", value->items[i]);
-        if(i+1 < listSize(value)) printf(",");
-    }
-    printf("]");    
+    printf("%ld=", key);
+    printList(value);
 }
 
 int main()
@@ -24,5 +19,6 @@ int main()
     listPush(lst, 5);
     listPush(lst, 7);
     printHashMap(m, printItemLong_ListLong);
+    printf("\n");
     freeScope(scope);
 }

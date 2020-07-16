@@ -65,7 +65,7 @@
                 printf(", ");                                                   \
         }                                                                       \
                                                                                 \
-        printf("]\n");                                                          \
+        printf("]");                                                          \
     }
     
 #define listArgMax(lst)                                                         \
