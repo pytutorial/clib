@@ -1,119 +1,59 @@
 #include "hash_map.h"
 
-HashMapL2L newHashMapL2L(Scope scope, int bucketSize)
+ListListKeyIndex newIndexTable(Scope scope, bucketSize) 
 {
-    HashMapL2L m = zeroAlloc(scope, sizeof(_HashMapL2LData));
-    m->_table = newList(scope);
-    m->_size = 0;
-    m->scope = scope;
-
-    for(int i = 0; i < bucketSize; i++)
+	ListListKeyIndex table = newList(scope);
+	for(int i = 0; i < bucketSize; i++)
     {
-        ListHashMapItemL2L lst = newList(scope);
-        listPush(m->_table, lst);
+        listPush(table, newList(scope));
     }
-
-    return m;
+	return table;
 }
 
-int hashMapL2LSize(HashMapL2L m)
+int indexTableGetIndex(ListListKeyIndex table, int key) 
 {
-    return m->_size;
-}
-
-bool hashMapL2LContainsKey(HashMapL2L m, long key)
-{
-    int bucketSize = listSize(m->_table);
+	if(table == NULL) return -1;
+	
+	int bucketSize = listSize(table);
     int index = (unsigned long) key % bucketSize;
-    ListHashMapItemL2L lstItem = m->_table->items[index];
-    
-    for(int i = 0; i < lstItem->_size; i++) 
+	ListKeyIndex lst = table->items[index];
+   
+    for(int i = 0; i < lst->_size; i++) 
     {
-        if(lstItem->items[i].key == key) return TRUE;
-    }
-
-    return FALSE;
-}
-
-void hashMapL2LPut(HashMapL2L m, long key, long value) 
-{
-    int bucketSize = listSize(m->_table);
-    int index = (unsigned long) key % bucketSize;
-    ListHashMapItemL2L lstItem = m->_table->items[index];
-    
-    for(int i = 0; i < lstItem->_size; i++) 
-    {
-        if(lstItem->items[i].key == key)
+        if(lst->items[i].key == key)
         {
-            lstItem->items[i].value = value;
-            return;
+			return lst->items[i].index;
         }
     }
-
-    HashMapItemL2L it = {key, value};
-    listPush(lstItem, it);
+	return -1;
 }
 
-long hashMapL2LGet(HashMapL2L m, long key, long defaultValue) 
-{
-    int bucketSize = listSize(m->_table);
-    int index = (unsigned long) key % bucketSize;
-    ListHashMapItemL2L lstItem = m->_table->items[index];
+#define newHashMap(scope, bucketSize) \
+	{ \
+		newIndexTable(scope, bucketSize), \
+		newList(scope), \
+		newList(scope), \
+		scope \
+	}
 
-    for(int i = 0; i < lstItem->_size; i++) 
-    {
-        if(lstItem->items[i].key == key)
-        {
-            return lstItem->items[i].value;
-        }
-    }
+#define hashMapSize(HashMap m) (m.keys != NULL ? listSize(m.keys) : 0)
 
-    return defaultValue;
+#define hashMapContainsKey(m, key) (indexTableGetIndex(m._table, key) >= 0)
+
+#define hashMapGet(m, key) ({index = indexTableGetIndex(m._table, key); m.values.items[index]; })
+
+#define hashMapGetOrDefault(m, key, defaultValue) \
+	({index = indexTableGetIndex(m._table, key); (index >= 0)? m.values.items[index] : defaultValue;})
+
+#define hashMapPut(m, key, value)  \
+{ \
+    int index = indexTableGetIndex(m._table, key); \
+	if(index >= 0)  \
+	{ \
+		m.values.items[index] = value; \
+	} \
+    KeyIndex ki = {key, m.keys->_size}; \
+    listPush(m._table->items[(unsigned long) key % bucketSize], ki);\
+	listPush(m.keys, key); \
+	listPush(m.values, value); \
 }
-
-ListLong hashMapL2LKeys(HashMapL2L m) 
-{
-    ListLong lst = newList(m->scope);
-    
-    for(int i = 0; i < m->_table->_size; i++) 
-    {
-        ListHashMapItemL2L lstItem = m->_table->items[i];
-        for(int j = 0; j < lstItem->_size; j++)
-        {
-            listPush(lst, lstItem->items[j].key);
-        }
-    }
-    return lst;
-}
-
-ListLong hashMapL2LValues(HashMapL2L m) 
-{
-    ListLong lst = newList(m->scope);
-    
-    for(int i = 0; i < m->_table->_size; i++) 
-    {
-        ListHashMapItemL2L lstItem = m->_table->items[i];
-        for(int j = 0; j < lstItem->_size; j++)
-        {
-            listPush(lst, lstItem->items[j].value);
-        }
-    }
-    return lst;
-}
-
-ListHashMapItemL2L hashMapL2LItems(HashMapL2L m) 
-{
-    ListHashMapItemL2L lst = newList(m->scope);
-    
-    for(int i = 0; i < m->_table->_size; i++) 
-    {
-        ListHashMapItemL2L lstItem = m->_table->items[i];
-        for(int j = 0; j < lstItem->_size; j++)
-        {
-            listPush(lst, lstItem->items[j]);
-        }
-    }
-    return lst;
-}
-
-

@@ -2,7 +2,7 @@
 #define __LIST_H__
 #include <stdio.h>
 #include <stdlib.h>
-#include "object.h"
+#include "scope.h"
 
 #define _ListData(T) struct {T* items; int _size; int _capacity; Scope scope;}
 
