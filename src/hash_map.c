@@ -27,33 +27,3 @@ int indexTableGetIndex(ListListKeyIndex table, int key)
     }
     return -1;
 }
-
-#define newHashMap(scope, bucketSize) \
-    { \
-        newIndexTable(scope, bucketSize), \
-        newList(scope), \
-        newList(scope), \
-        scope \
-    }
-
-#define hashMapSize(HashMap m) (m.keys != NULL ? listSize(m.keys) : 0)
-
-#define hashMapContainsKey(m, key) (indexTableGetIndex(m._table, key) >= 0)
-
-#define hashMapGet(m, key) ({index = indexTableGetIndex(m._table, key); m.values.items[index]; })
-
-#define hashMapGetOrDefault(m, key, defaultValue) \
-    ({index = indexTableGetIndex(m._table, key); (index >= 0)? m.values.items[index] : defaultValue;})
-
-#define hashMapPut(m, key, value)  \
-{ \
-    int index = indexTableGetIndex(m._table, key); \
-    if(index >= 0)  \
-    { \
-        m.values.items[index] = value; \
-    } \
-    KeyIndex ki = {key, m.keys->_size}; \
-    listPush(m._table->items[(unsigned long) key % bucketSize], ki);\
-    listPush(m.keys, key); \
-    listPush(m.values, value); \
-}

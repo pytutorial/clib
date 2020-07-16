@@ -13,9 +13,7 @@ typedef struct
 typedef List(KeyIndex) ListKeyIndex;
 typedef List(ListKeyIndex) ListListKeyIndex;
 
-#define _HashMap(V) struct { ListListKeyIndex _table; ListLong keys; List(V) values; Scope scope; }
-
-typedef _HashMap(long) HashMap;
+#define HashMap(V) struct { ListListKeyIndex _table; ListLong keys; List(V) values; Scope scope; }
 
 ListListKeyIndex newIndexTable(Scope scope, int bucketSize) ;
 int indexTableGetIndex(ListListKeyIndex table, long key) ;
