@@ -10,7 +10,7 @@ int main()
     listPush(lst, 8);
     listPush(lst, 6);
     printList(lst, "%d");
-    print("%d\n", listMax(lst));
+    printf("%d\n", listMax(lst));
     freeScope(scope);
     return 0;
 }

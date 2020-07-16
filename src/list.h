@@ -54,29 +54,29 @@
 
 #define listClear(lst)          {(lst)->_size = 0;}
 
-#define printList(lst, fmt)                                             \
-    {                                                                   \
-        printf("[");                                                    \
-                                                                        \
-        for (int i = 0; i < (lst)->_size; i++)                          \
-        {                                                               \
-            printf(fmt, (lst)->items[i]);                               \
-            if (i < (lst)->_size - 1)                                   \
-                printf(", ");                                           \
-        }                                                               \
-                                                                        \
-        printf("]\n");                                                  \
+#define printList(lst, fmt)                                              \
+    {                                                                    \
+        printf("[");                                                     \
+                                                                         \
+        for (int i = 0; i < (lst)->_size; i++)                           \
+        {                                                                \
+            printf(fmt, (lst)->items[i]);                                \
+            if (i < (lst)->_size - 1)                                    \
+                printf(", ");                                            \
+        }                                                                \
+                                                                         \
+        printf("]\n");                                                   \
     }
 
-#define listMax(lst) \
-    ({\
-        if((lst)->_size == 0) halt(); \
-        typeof((lst)->item[0]) max = (lst)->item[0]; \
-        for(int i = 0; i < (lst)->_size;i++) \
-        { \
-            if((lst)->item[i] > max) max = (lst)->item[i]; \
-        } \
-        max; \
+#define listMax(lst)                                                     \
+    ({                                                                   \
+        if((lst)->_size == 0) halt();                                    \
+        typeof((lst)->items[0]) max = (lst)->items[0];                   \
+        for(int i = 0; i < (lst)->_size; i++)                            \
+        {                                                                \
+            if((lst)->items[i] > max) max = (lst)->items[i];             \
+        }                                                                \
+        max;                                                             \
     })
     
 typedef List(int) ListInt;
