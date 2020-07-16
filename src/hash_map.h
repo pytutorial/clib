@@ -94,8 +94,6 @@ inline static int indexTableGetIndex(ListListKeyIndex table, unsigned long key)
         printf("}");                                                            \
     }
 
-#endif
-
 #define printHashMapFmt(m, fmt)                                                 \
     {                                                                           \
         printf("{");                                                            \
