@@ -61,17 +61,17 @@ inline static int indexTableGetIndex(ListListKeyIndex table, long key)
         ({int index = indexTableGetIndex(m._table, key); (index >= 0)? m.values->items[index] : defaultValue;})
 
 #define hashMapPut(m, key, value)  \
-{ \
+{                                  \
     int index = indexTableGetIndex(m._table, key); \
-        if(index >= 0)  \
-        { \
-                m.values->items[index] = value; \
-        } \
+    if(index >= 0)  \
+    { \
+            m.values->items[index] = value; \
+    } \
     KeyIndex ki = {key, m.keys->_size}; \
     int bucketSize = listSize(m._table);\
     listPush(m._table->items[(unsigned long) key % bucketSize], ki);\
-        listPush(m.keys, key); \
-        listPush(m.values, value); \
+    listPush(m.keys, key); \
+    listPush(m.values, value); \
 }
 
 #endif
