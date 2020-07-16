@@ -5,7 +5,7 @@ typedef HashMap(long, ListLong) HashMapLong_ListLong;
 void printItemLong_ListLong(long key, ListLong value)
 {
     printf("%ld=", key);
-    printList(value);
+    printListFmt(value, "%ld");
 }
 
 int main()

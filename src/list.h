@@ -54,7 +54,7 @@
 
 #define listClear(lst)          {(lst)->_size = 0;}
 
-#define printList(lst, fmt)                                                     \
+#define printListFmt(lst, fmt)                                                  \
     {                                                                           \
         printf("[");                                                            \
                                                                                 \
@@ -65,8 +65,23 @@
                 printf(", ");                                                   \
         }                                                                       \
                                                                                 \
-        printf("]");                                                          \
+        printf("]");                                                            \
     }
+
+#define printList(lst, printItemFunc)                                           \
+    {                                                                           \
+        printf("[");                                                            \
+                                                                                \
+        for (int i = 0; i < (lst)->_size; i++)                                  \
+        {                                                                       \
+            printItemFunc((lst)->items[i]);                                     \
+            if (i < (lst)->_size - 1)                                           \
+                printf(", ");                                                   \
+        }                                                                       \
+                                                                                \
+        printf("]");                                                            \
+    }
+
     
 #define listArgMax(lst)                                                         \
     ({                                                                          \
