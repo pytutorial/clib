@@ -1,6 +1,6 @@
 #include "hash_map.h"
 
-ListListKeyIndex newIndexTable(Scope scope, bucketSize) 
+ListListKeyIndex newIndexTable(Scope scope, int bucketSize) 
 {
     ListListKeyIndex table = newList(scope);
     for(int i = 0; i < bucketSize; i++)
