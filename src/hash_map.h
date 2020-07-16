@@ -55,10 +55,10 @@ inline static int indexTableGetIndex(ListListKeyIndex table, long key)
 
 #define hashMapContainsKey(m, key) (indexTableGetIndex(m._table, key) >= 0)
 
-#define hashMapGet(m, key) ({int index = indexTableGetIndex(m._table, key); m.values->items[index]; })
+#define hashMapGet(m, key) ({int index = indexTableGetIndex(m._table, key); m.values->items[(unsigned) index]; })
 
 #define hashMapGetOrDefault(m, key, defaultValue) \
-        ({int index = indexTableGetIndex(m._table, key); (index >= 0)? m.values->items[index] : defaultValue;})
+        ({int index = indexTableGetIndex(m._table, key); (index >= 0)? m.values->items[(unsigned) index] : defaultValue;})
 
 #define hashMapPut(m, key, value)  \
 {                                  \
