@@ -40,7 +40,7 @@ int main()
     listPush(lst, 8);
     listPush(lst, 6);
     quicksort(lst->items, listSize(lst));
-    printList(lst, "%d");
+    printListFmt(lst, "%d");
     /*printf("Argmax: %d\n", listArgMax(lst));
     printf("Max: %d\n", listMax(lst));
     printf("Argmin: %d\n", listArgMin(lst));
