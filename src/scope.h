@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#define halt()  {*((int*)0) = 0;}
+
 typedef int bool;
 #define TRUE 1
 #define FALSE 0
