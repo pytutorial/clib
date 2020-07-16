@@ -54,6 +54,66 @@
 
 #define listClear(lst)          {(lst)->_size = 0;}
 
+#define listFilterIndexes(scope, lst, func)                                     \
+    ({                                                                          \
+        ListInt indexes = newList(scope);                                       \
+        for(int i = 0; i < listSize(lst); i++)                                  \
+        {                                                                       \
+            if(func((lst)->items[i])) listPush(indexes, i);                     \
+        }                                                                       \
+        indexes;                                                                \
+    })
+
+#define listFilterItems(scope, lst, func)                                       \
+    ({                                                                          \
+        typeof(lst) items = newList(scope);                                     \
+        for(int i = 0; i < listSize(lst); i++)                                  \
+        {                                                                       \
+            if(func((lst)->items[i])) listPush(items, lst->items[i]);           \
+        }                                                                       \
+        indexes;                                                                \
+    })
+    
+#define listGroupBy(scope, lst, key_func)                                       \
+    ({                                                                          \
+        HashMapLong_ListInt groups = newHashMap(scope);                         \
+        for(int i = 0; i < listSize(lst); i++)                                  \
+        {                                                                       \
+            unsigned long key = key_func(lst->items[i]);                        \
+            ListInt indexes = hashMapGetOrDefault(groups, key, NULL);           \
+            if(indexes == NULL)                                                 \
+            {                                                                   \
+                indexes = (ListInt) newList(scope);                             \
+                hashMapPut(groups, indexes);                                    \
+            }                                                                   \
+            listPush(indexes, i);                                               \
+        }                                                                       \
+        groups;                                                                 \
+    })
+    
+#define subListByIndexes(scope, lst, indexes)                                   \
+    ({                                                                          \
+        typeof(lst) subLst = newList(scope);                                    \
+        for(int i = 0; i < listSize(indexes); i++)                              \
+        {                                                                       \
+            unsigned index = indexes.items[i];                                  \
+            listPush(subLst, listGet(lst, index));                              \
+        }                                                                       \
+        subLst;                                                                 \
+    })                                                                          \
+    
+#define subList(scope, lst, start, end)                                         \
+    ({                                                                          \
+        if(start < 0) start = 0;                                                \
+        if(end > listSize(lst)) end = listSize(lst);                            \
+        typeof(lst) subLst = newList(scope);                                    \
+        for(int i = start; i < end; i++)                                        \
+        {                                                                       \
+            listPush(subLst, lst->items[i]);                                    \
+        }                                                                       \
+        subLst;                                                                 \
+    })
+    
 #define printListFmt(lst, fmt)                                                  \
     {                                                                           \
         printf("[");                                                            \

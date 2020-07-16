@@ -108,4 +108,5 @@ inline static int indexTableGetIndex(ListListKeyIndex table, unsigned long key)
         printf("}");                                                            \
     }
 
+typedef HashMap(long, ListInt) HashMapLong_ListInt;
 #endif

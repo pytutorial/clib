@@ -1,34 +1,45 @@
 #include "list.h"
 #include <stdio.h>
 
-#define _quicksort(number,N, func){             \
-   int i, j, pivot, temp;                       \
-   if(N-1>0){                                   \
-      pivot=0;                                  \
-      i=0;                                      \
-      j=N-1;                                    \
-      while(i<j){                               \
-         while(number[i]<=number[pivot]&&i<N-1) \
-            i++;                                \
-         while(number[j]>number[pivot])         \
-            j--;                                \
-         if(i<j){                               \
-            temp=number[i];                     \
-            number[i]=number[j];                \
-            number[j]=temp;                     \
-         }                                      \
-      }                                         \
-      temp=number[pivot];                       \
-      number[pivot]=number[j];                  \
-      number[j]=temp;                           \
-      func(number,j);                           \
-      func(number+j+1,N-j-1);                   \
-   }                                            \
+#define _quicksort(number,N, key_func, func){                                   \
+   int i, j, pivot;                                                             \
+   typeof(number[0]) temp;                                                      \
+   if(N-1>0){                                                                   \
+      pivot=0;                                                                  \
+      i=0;                                                                      \
+      j=N-1;                                                                    \
+      while(i<j){                                                               \
+         if(key_func)                                                           \
+         {                                                                      \
+            while(key_func(number[i])<=key_func(number[pivot])&&i<N-1)          \
+               i++;                                                             \
+            while(key_func(number[j])>key_func(number[pivot]))                  \
+               j--;                                                             \
+         }                                                                      \
+         else                                                                   \
+         {                                                                      \
+             while(number[i]<=number[pivot])&&i<N-1)                            \
+               i++;                                                             \
+            while(number[j]>number[pivot])                                      \
+               j--;                                                             \
+         }                                                                      \
+         if(i<j){                                                               \
+            temp=number[i];                                                     \
+            number[i]=number[j];                                                \
+            number[j]=temp;                                                     \
+         }                                                                      \
+      }                                                                         \
+      temp=number[pivot];                                                       \
+      number[pivot]=number[j];                                                  \
+      number[j]=temp;                                                           \
+      func(number,j);                                                           \
+      func(number+j+1,N-j-1);                                                   \
+   }                                                                            \
 }
 
 void quicksort(int* number, int N) 
 {
-    _quicksort(number, N, quicksort);
+    _quicksort(number, N, NULL, quicksort);
 }
 
 int main()
