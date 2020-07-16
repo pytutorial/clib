@@ -17,11 +17,38 @@ typedef List(ListKeyIndex) ListListKeyIndex;
 
 typedef _HashMap(long) HashMap;
 
-HashMap newHashMap(Scope scope, int bucketSize);
-int hashMapSize(HashMap m);
-bool hashMapContainsKey(HashMap m, long key);
-void hashMapPut(HashMap m, long key, long value);
-long hashMapGet(HashMap m, long key);
-long hashMapGetOrDefault(HashMap m, long key, long defaultValue);
+ListListKeyIndex newIndexTable(Scope scope, int bucketSize) ;
+int indexTableGetIndex(ListListKeyIndex table, long key) ;
+
+#define newHashMap(scope, bucketSize) \
+        { \
+                newIndexTable(scope, bucketSize), \
+                newList(scope), \
+                newList(scope), \
+                scope \
+        }
+
+#define hashMapSize(m) (m.keys != NULL ? listSize(m.keys) : 0)
+
+#define hashMapContainsKey(m, key) (indexTableGetIndex(m._table, key) >= 0)
+
+#define hashMapGet(m, key) ({int index = indexTableGetIndex(m._table, key); m.values->items[index]; })
+
+#define hashMapGetOrDefault(m, key, defaultValue) \
+        ({int index = indexTableGetIndex(m._table, key); (index >= 0)? m.values->items[index] : defaultValue;})
+
+#define hashMapPut(m, key, value)  \
+{ \
+    int index = indexTableGetIndex(m._table, key); \
+        if(index >= 0)  \
+        { \
+                m.values->items[index] = value; \
+        } \
+    KeyIndex ki = {key, m.keys->_size}; \
+    int bucketSize = listSize(m._table);\
+    listPush(m._table->items[(unsigned long) key % bucketSize], ki);\
+        listPush(m.keys, key); \
+        listPush(m.values, value); \
+}
 
 #endif
