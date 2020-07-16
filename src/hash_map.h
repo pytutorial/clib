@@ -6,14 +6,14 @@
 
 typedef struct 
 {
-    long key;
-    long index;
+    unsigned long key;
+    int index;
 } KeyIndex;
 
 typedef List(KeyIndex) ListKeyIndex;
 typedef List(ListKeyIndex) ListListKeyIndex;
 
-#define HashMap(V) struct { ListListKeyIndex _table; ListLong keys; List(V) values; Scope scope; }
+#define HashMap(K, V) struct { ListListKeyIndex _table; List(K) keys; List(V) values; Scope scope; }
 
 inline static ListListKeyIndex newIndexTable(Scope scope, int bucketSize)  
 {
@@ -25,12 +25,12 @@ inline static ListListKeyIndex newIndexTable(Scope scope, int bucketSize)
     return table;
 }
 
-inline static int indexTableGetIndex(ListListKeyIndex table, long key)  
+inline static int indexTableGetIndex(ListListKeyIndex table, unsigned long key)  
 {
     if(table == NULL) return -1;
     
     int bucketSize = listSize(table);
-    int index = (unsigned long) key % bucketSize;
+    int index = key % bucketSize;
     ListKeyIndex lst = table->items[index];
    
     for(int i = 0; i < lst->_size; i++) 
@@ -51,27 +51,27 @@ inline static int indexTableGetIndex(ListListKeyIndex table, long key)
                 scope \
         }
 
-#define hashMapSize(m) (m.keys != NULL ? listSize(m.keys) : 0)
+#define hashMapSize(m) ((m).keys != NULL ? listSize((m).keys) : 0)
 
-#define hashMapContainsKey(m, key) (indexTableGetIndex(m._table, key) >= 0)
+#define hashMapContainsKey(m, key) (indexTableGetIndex((m)._table, (unsigned long) (key)) >= 0)
 
-#define hashMapGet(m, key) ({int index = indexTableGetIndex(m._table, key); m.values->items[(unsigned) index]; })
+#define hashMapGet(m, key) ({int index = indexTableGetIndex((m)._table, (unsigned long) (key)); (m).values->items[(unsigned) index]; })
 
 #define hashMapGetOrDefault(m, key, defaultValue) \
-        ({int index = indexTableGetIndex(m._table, key); (index >= 0)? m.values->items[(unsigned) index] : defaultValue;})
+        ({int index = indexTableGetIndex(m._table, key); (index >= 0)? (m).values->items[index] : defaultValue;})
 
 #define hashMapPut(m, key, value)  \
 {                                  \
-    int index = indexTableGetIndex(m._table, key); \
+    int index = indexTableGetIndex((m)._table, key); \
     if(index >= 0)  \
     { \
-            m.values->items[index] = value; \
+            (m).values->items[index] = value; \
     } \
-    KeyIndex ki = {key, m.keys->_size}; \
-    int bucketSize = listSize(m._table);\
-    listPush(m._table->items[(unsigned long) key % bucketSize], ki);\
-    listPush(m.keys, key); \
-    listPush(m.values, value); \
+    KeyIndex ki = {key, (m).keys->_size}; \
+    int bucketSize = listSize((m)._table);\
+    listPush((m)._table->items[(unsigned long) key % bucketSize], ki);\
+    listPush((m).keys, key); \
+    listPush((m).values, value); \
 }
 
 #endif
