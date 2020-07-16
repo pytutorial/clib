@@ -10,7 +10,7 @@ ListListKeyIndex newIndexTable(Scope scope, bucketSize)
     return table;
 }
 
-int indexTableGetIndex(ListListKeyIndex table, int key) 
+int indexTableGetIndex(ListListKeyIndex table, long key) 
 {
     if(table == NULL) return -1;
     
