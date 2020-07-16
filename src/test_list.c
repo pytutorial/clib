@@ -39,7 +39,7 @@
 
 void quicksort(int* number, int N) 
 {
-    int (*fun_ptr)(int) key_func = NULL;
+    int (*key_func)(int)  = NULL;
     _quicksort(number, N, key_func, quicksort);
 }
 
