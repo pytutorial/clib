@@ -37,10 +37,12 @@
    }                                                                            \
 }
 
+int neg(int x) { return -x;}
+
 void quicksort(int* number, int N) 
 {
     int (*key_func)(int)  = NULL;
-    _quicksort(number, N, key_func, quicksort);
+    _quicksort(number, N, neg, quicksort);
 }
 
 int main()
