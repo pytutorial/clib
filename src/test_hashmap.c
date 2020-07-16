@@ -10,7 +10,7 @@ void printItemLong_ListLong(long key, ListLong value)
         printf("%ld", value->items[i]);
         if(i+1 < listSize(value)) printf(",");
     }
-    printf("]\n");    
+    printf("]");    
 }
 
 int main()
