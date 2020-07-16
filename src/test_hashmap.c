@@ -19,10 +19,10 @@ int main()
     HashMapLong_ListLong m = newHashMap(scope, 1024);
     hashMapPut(m, 10, newList(scope));
     ListLong lst = hashMapGet(m, 10);
-    listAdd(lst, 1);
-    listAdd(lst, 3);
-    listAdd(lst, 5);
-    listAdd(lst, 7);
+    listPush(lst, 1);
+    listPush(lst, 3);
+    listPush(lst, 5);
+    listPush(lst, 7);
     printHashMap(m, printItemLong_ListLong);
     freeScope(scope);
 }
