@@ -18,7 +18,7 @@
          }                                                                      \
          else                                                                   \
          {                                                                      \
-             while(number[i]<=number[pivot])&&i<N-1)                            \
+             while(number[i]<=number[pivot]&&i<N-1)                            \
                i++;                                                             \
             while(number[j]>number[pivot])                                      \
                j--;                                                             \
