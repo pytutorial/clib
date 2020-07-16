@@ -7,9 +7,10 @@ int main()
     ListInt lst = newList(scope);
     listPush(lst, 1);
     listPush(lst, 3);
-    listPush(lst, 6);
     listPush(lst, 8);
+    listPush(lst, 6);
     printList(lst, "%d");
+    print("%d\n", listMax(lst));
     freeScope(scope);
     return 0;
 }
