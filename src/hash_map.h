@@ -86,7 +86,7 @@ inline static int indexTableGetIndex(ListListKeyIndex table, unsigned long key)
                                                                                 \
         for (int i = 0; i < hashMapSize(m); i++)                                \
         {                                                                       \
-            printf(fmt, (m)->keys[i], (m)->values[i]);                          \
+            printf(fmt, (m).keys->items[i], (m).values->items[i]);              \
             if (i < hashMapSize(m) - 1)                                         \
                 printf(", ");                                                   \
         }                                                                       \
