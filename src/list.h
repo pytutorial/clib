@@ -10,9 +10,9 @@
 
 #define newList(scope) ({                                                 \
     int size = sizeof(_ListData(void));                                   \
-    (_ListData(void)*) data = zeroAlloc(scope, size);                     \
-    data->scope = scope;                                                  \
-    (void*) data;                                                         \
+    List(void) lst = zeroAlloc(scope, size);                              \
+    lst->scope = scope;                                                   \
+    (void*) lst;                                                          \
 })
 
 #define listSize(lst) (lst)->_size
