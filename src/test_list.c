@@ -9,7 +9,7 @@
       i=0;                                                                      \
       j=N-1;                                                                    \
       while(i<j){                                                               \
-         if(key_func)                                                           \
+         if(key_func != NULL)                                                           \
          {                                                                      \
             while(key_func(number[i])<=key_func(number[pivot])&&i<N-1)          \
                i++;                                                             \
