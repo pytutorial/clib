@@ -80,13 +80,13 @@ inline static int indexTableGetIndex(ListListKeyIndex table, unsigned long key)
     }                                                                           \
 }
 
-#define printHashMap(m, fmt)                                                    \
+#define printHashMap(m, printItemfunc)                                          \
     {                                                                           \
         printf("{");                                                            \
                                                                                 \
         for (int i = 0; i < hashMapSize(m); i++)                                \
         {                                                                       \
-            printf(fmt, (m).keys->items[i], (m).values->items[i]);              \
+            printItemfunc((m).keys->items[i], (m).values->items[i]);            \
             if (i < hashMapSize(m) - 1)                                         \
                 printf(", ");                                                   \
         }                                                                       \
