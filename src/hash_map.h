@@ -15,8 +15,33 @@ typedef List(ListKeyIndex) ListListKeyIndex;
 
 #define HashMap(V) struct { ListListKeyIndex _table; ListLong keys; List(V) values; Scope scope; }
 
-ListListKeyIndex newIndexTable(Scope scope, int bucketSize) ;
-int indexTableGetIndex(ListListKeyIndex table, long key) ;
+inline static ListListKeyIndex newIndexTable(Scope scope, int bucketSize)  
+{
+    ListListKeyIndex table = newList(scope);
+    for(int i = 0; i < bucketSize; i++)
+    {
+        listPush(table, newList(scope));
+    }
+    return table;
+}
+
+inline static int indexTableGetIndex(ListListKeyIndex table, long key)  
+{
+    if(table == NULL) return -1;
+    
+    int bucketSize = listSize(table);
+    int index = (unsigned long) key % bucketSize;
+    ListKeyIndex lst = table->items[index];
+   
+    for(int i = 0; i < lst->_size; i++) 
+    {
+        if(lst->items[i].key == key)
+        {
+            return lst->items[i].index;
+        }
+    }
+    return -1;
+}
 
 #define newHashMap(scope, bucketSize) \
         { \
